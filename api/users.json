@@ -1,0 +1,17 @@
+{
+    "users":[
+        {
+            "uid": "HJG453UJFGLE8H4JKHGF7",
+            "username": "coucou",
+            "group": "group1",
+            "link": "",
+            "password": ""
+        }
+    ],
+    "groups":[
+        {
+            "name": "group1",
+            "chief": "coucou"
+        }
+    ]
+}
