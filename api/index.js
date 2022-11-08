@@ -1,7 +1,12 @@
-
+// 📚 Librairies
 const express = require('express');
 require('dotenv').config();
 var request = require('request'); // "Request" library
+
+// 🚗 Routes
+const authRoute = require("./routes/auth");
+const usersRoute = require("./routes/users");
+
 let app = express();
 
 app.use(express.json()); // Body parser for POST requests
@@ -33,6 +38,10 @@ app.get('/api/refresh_token', function(req, res) {
     });
 });
   
+
+app.use("/api/token", authRoute);
+app.use("/api/users", usersRoute);
+
 app.listen(port, () =>  {
     console.log('le serveur fonctionne sur le port ' + port)
 })
