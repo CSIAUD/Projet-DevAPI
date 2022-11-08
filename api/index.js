@@ -1,14 +1,16 @@
-// 📚 Libraries
 const express = require('express');
-const dotenv = require('dotenv');
+require('dotenv').config();
 
-dotenv.config();
+let app = express();
+var port = process.env.PORT;
+var client_id = process.env.CLIENT_ID;
+var client_secret = process.env.CLIENT_SECRET;
+var redirect_uri = process.env.REDIRECT_URI;
 
-const app = express();
-const PORT = 8080;
-
-app.use(express.json()); // Body parser for POST requests
-
-app.listen(PORT, () => {
-    console.log(`Backend server is running on port ${PORT}...`);
+app.get('/', function(req, res) {
+  res.send();
 });
+
+app.listen(port, () =>  {
+    console.log('le serveur fonctionne sur le port ' + port)
+})
