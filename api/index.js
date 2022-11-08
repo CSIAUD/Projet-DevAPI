@@ -20,7 +20,7 @@ var redirect_uri = process.env.REDIRECT_URI;
 app.use("/api/token", authRoute);
 app.use("/api/users", usersRoute);
 
-// API Spotify =====
+// ===== API Spotify =====
 app.use('/api/refresh_token', refreshTokenRoute);
 
 app.listen(port, () =>  {
