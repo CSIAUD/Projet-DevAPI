@@ -239,4 +239,4 @@ La note finale est plafonnée à 20/20.<br><br>
 
 - Copie du repo : 'git clone https://github.com/CSIAUD/Projet-DevAPI.git'
 - Changement de branche : 'git checkout <\nombranche>'
-- Installation de Express dans le dossier Projet-DevAPI : 'npm install express'
+- Installation des Dépendances du Projet-DevAPI : 'npm install'
