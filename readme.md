@@ -1,117 +1,127 @@
-# YSpotify API
+# <strong>YSpotify API</strong>
+# Service d’extensions de l’API Spotify
 
-## L'équipe :
+## <strong>L'équipe</strong> :
 
 - LEPINAY Nicolas (FT-1 & FT-2)
 - SIAUD Cyprien (FT-3 & FT-6)
 - KIM Injin (FT-4 & FT-5)
 - PALMIERI Matéo (FT-7 & FT-8)
+<br><br>
 
-## Service d’extensions de l’API Spotify
-
-## Prérequis
+## <strong>Prérequis</strong>
 1. Posséder un compte Spotify ;
 2. Avoir créé un client Spotify sur votre espace développeur (Dashboard) (https://developer.spotify.com/dashboard/applications)
+<br><br>
 
-## Lexique
-Service : Application exposant les fonctionnalités.
-Utilisateur : Utilisateur inscrit et authentifié sur le Service.
-Utilisateur anonyme : Utilisateur non-authentifié sur le Service.
-Groupe : Ensemble d’Utilisateurs.
-Chef : Utilisateur ayant des droits privilégiés sur son Groupe.
+## <strong>Lexique</strong>
+<strong>Service</strong> : Application exposant les fonctionnalités.<br>
+<strong>Utilisateur</strong> : Utilisateur <strong>inscrit</strong> et <strong>authentifié</strong> sur le Service.<br>
+<strong>Utilisateur anonyme</strong> : Utilisateur <strong>non-authentifié</strong> sur le Service.<br>
+<strong>Groupe</strong> : Ensemble d’Utilisateurs.<br>
+<strong>Chef</strong> : Utilisateur ayant des droits privilégiés sur son Groupe.<br><br>
 
-## Fonctionnalités obligatoires
-Cette section décrit l’ensemble des fonctionnalités obligatoires que le Service doit exposer.
+## <strong>Fonctionnalités obligatoires</strong>
+Cette section décrit l’ensemble des fonctionnalités <strong>obligatoires</strong> que le Service doit exposer.<br><br>
 
-### FT-1 Inscription
-L’Utilisateur anonyme peut s’inscrire sur le Service. Il doit alors fournir les informations suivantes :
-• Un nom d’utilisateur (pseudo) ;
-• Un mot de passe.
-
-Le nom d’utilisateur de chaque Utilisateur sert d’identifiant et doit donc être unique au sein du 
-Service. Autrement dit, deux Utilisateurs ne peuvent pas avoir le même pseudo.
+### <strong>FT-1 Inscription</strong>
+L’Utilisateur anonyme peut s’inscrire sur le Service. Il doit alors fournir les informations suivantes :<br>
+<ul>
+    <li>Un nom d’utilisateur (pseudo) ;</li>
+    <li>Un mot de passe.</li>
+</ul>
+Le nom d’utilisateur de chaque Utilisateur sert d’<strong>identifiant</strong> et doit donc être <strong>uniques</strong> au sein du Service.<br>
+Autrement dit, deux Utilisateurs ne peuvent pas avoir le même pseudo.<br>
 Quant au mot de passe, aucune contrainte n’est imposée.
+<br><br>
 
-### FT-2 Connexion
+### <strong>FT-2 Connexion</strong>
 L’Utilisateur anonyme peut se connecter au Service en fournissant sont pseudo et mot de passe. Il 
 obtient alors un token d’accès au Service, l’authentifiant pour toutes ses futures requêtes. Le token 
-a une durée de validité d’une heure.
+a une durée de validité d’<strong>une heure</strong>.
+<br><br>
 
-### FT-3 Liaison du compte Spotify
+### <strong>FT-3 Liaison du compte Spotify</strong>
 L’Utilisateur peut déléguer l’autorisation au Service d’utiliser les services (API) de Spotify en son 
 nom.
-Plus de détails sont donnés plus bas dans la section Authentification.
+Plus de détails sont donnés plus bas dans la section <a href="#Authentification">Authentification</a>.
+<br><br>
 
-### FT-4 Rejoindre un Groupe
-L’Utilisateur peut rejoindre un Groupe. Les Groupes sont identifiés simplement par leur nom (chaîne 
-de caractères).
-Si l’Utilisateur tente de rejoindre un Groupe qui n’existe pas, alors le Groupe est automatiquement 
-créé et l’Utilisateur en devient le Chef.
-Si l’Utilisateur appartient déjà à un Groupe, alors il le quitte automatiquement avant de rejoindre le 
-nouveau. Si L’Utilisateur quittant le Groupe est le Chef, un nouveau Chef est aléatoirement assigné 
-parmi les membres restants. S’il ne reste plus personne dans le Groupe, le Groupe n'existe plus.
+### <strong>FT-4 Rejoindre un Groupe</strong>
+L’Utilisateur peut rejoindre un Groupe. Les Groupes sont identifiés simplement par leur nom (chaîne de caractères).<br>
+
+Si l’Utilisateur tente de rejoindre un Groupe qui n’existe pas, alors le Groupe est automatiquement créé et l’Utilisateur en devient le Chef.<br>
+
+Si l’Utilisateur appartient déjà à un Groupe, alors il le quitte <strong>automatiquement</strong> avant de rejoindre le nouveau.
+Si L’Utilisateur quittant le Groupe est le Chef, un nouveau Chef est aléatoirement assigné parmi les membres restants.
+S’il ne reste plus personne dans le Groupe, le Groupe n'existe plus.<br>
 N.B. : Par défaut (à l’inscription), un Utilisateur n’appartient à aucun Groupe.
+<br><br>
 
-### FT-5 Consultation des Groupes et Utilisateurs
-Liste des Groupes :
+### <strong>FT-5 Consultation des Groupes et Utilisateurs</strong>
+<strong>Liste des Groupes :</strong>
 L’Utilisateur peut consulter la liste de tous les Groupes existant sur le Service. Les informations 
-retournées associées à chaque Groupe sont les suivantes :
-• Nom du groupe ;
-• Nombre d’Utilisateurs dans le groupe.
+retournées associées à chaque Groupe sont les suivantes :<br>
+<ul>
+    <li>Nom du groupe ;</li>
+    <li>Nombre d’Utilisateurs dans le groupe.</li>
+</ul>
 
-Liste des membres du Groupe :
-L’Utilisateurs peut également consulter la liste de tous les Utilisateurs appartenant à son Groupe. 
-Les informations retournées associées à chaque Utilisateur sont les suivantes :
-• Nom d’utilisateur (pseudo) ;
-• S’il est le Chef du Groupe ;
-• Pseudo du compte Spotify associé (si liaison) ;
-• Morceau en cours d’écoute (si liaison) ;
-o Titre du morceau, nom de l’artiste, titre de l’album ;
-• Nom de l’appareil d’écoute actif (si liaison).
+<strong>Liste des membres du Groupe :</strong>
+L’Utilisateurs peut également consulter la liste de tous les Utilisateurs appartenant à <strong>son</strong> Groupe. 
+Les informations retournées associées à chaque Utilisateur sont les suivantes :<br>
+<ul>
+    <li>Nom d’utilisateur (pseudo) ;</li>
+    <li>S’il est le Chef du Groupe ;</li>
+    <li>Pseudo du compte Spotify associé (si liaison) ;</li>
+    <li>Morceau en cours d’écoute (si liaison) ;</li>
+    <li>Titre du morceau, nom de l’artiste, titre de l’album ;</li>
+    <li>Nom de l’appareil d’écoute actif (si liaison).</li>
+</ul>
+Un Utilisateur n’appartenant à aucun Groupe n’est pas autorisé à effectuer cette requête.<br><br>
 
-Un Utilisateur n’appartenant à aucun Groupe n’est pas autorisé à effectuer cette requête.
-
-### FT-6 Personnalité de l’Utilisateur
+### <strong>FT-6 Personnalité de l’Utilisateur</strong>
 Le Service doit être capable de déduire la personnalité de l’Utilisateur effectuant la requête en 
-fonction de ses “Titres Likés”. Plus précisément, tous les “Titres Likés” sont analysés1 pour générer 
-un portrait de l’Utilisateur, contenant les informations suivantes (liste exhaustive) :
-• Attrait pour la dance (entier de 0 à 10) ;
-• Agitation (tempo moyen écouté) ;
-• Préférence entre les musiques vocales ou instrumentales ;
-• Attitude plutôt positive ou négative (voir l’attribut “valence”).
-
+fonction de ses “Titres Likés”. Plus précisément, tous les “Titres Likés” sont analysés(1) pour générer 
+un portrait de l’Utilisateur, contenant les informations suivantes (liste exhaustive) :<br>
+<ul>
+    <li>Attrait pour la dance (entier de 0 à 10) ;</li>
+    <li>Agitation (tempo moyen écouté) ;</li>
+    <li>Préférence entre les musiques vocales ou instrumentales ;</li>
+    <li>Attitude plutôt positive ou négative (voir l’attribut “valence”).</li>
+</ul>
 Si l’Utilisateur ne dispose d’aucun titre dans ces “Titres Likés”, la ressource (personnalité de 
-l’utilisateur) n’existe pas.
+l’utilisateur) n’existe pas.<br><br>
 
-### FT-7 Synchronisation
-Le Chef peut synchroniser la musique qu’il est en train d’écouter sur tous les appareils actifs des 
-autres Utilisateurs (Utilisateurs synchronisés) appartenant à son Groupe. Le périphérique actif de 
+### <strong>FT-7 Synchronisation</strong>
+Le <strong>Chef</strong> peut synchroniser la musique qu’il est en train d’écouter sur tous les appareils actifs des 
+autres Utilisateurs (Utilisateurs synchronisés) <strong>appartenant à son Groupe</strong>. Le périphérique actif de 
 chaque Utilisateur synchronisé joue alors la musique exactement à la même position (temps) que 
-l’Utilisateur synchronisant au moment où celui-ci a effectué la requête de synchronisation.
+l’Utilisateur synchronisant au moment où celui-ci a effectué la requête de synchronisation.<br><br>
 
-### FT-8 Playlist
+### <strong>FT-8 Playlist</strong>
 L’Utilisateur peut demander la création d’une playlist sur son compte Spotify contenant les 10
-musiques préférées2 d’un autre Utilisateur (qui peut être lui-même) passé en paramètre.
+musiques préférées(2) d’un autre Utilisateur (qui peut être lui-même) passé en paramètre.
 L’Utilisateur passé en paramètre doit appartenir au même Groupe que l’Utilisateur ayant effectué la 
-requête.
+requête.<br><br>
 
-## Ressources
-https://developer.spotify.com/dashboard/applications
-https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-audio-features
-https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-top-artists-and-tracks
-(3) : https://developer.spotify.com/documentation/general/guides/authorization/
-https://developer.spotify.com/documentation/general/guides/authorization/implicit-grant/
+## <strong>Ressources</strong>
+https://developer.spotify.com/dashboard/applications<br>
+(1) : https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-audio-features<br>
+(2) : https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-top-artists-and-tracks<br>
+(3) : https://developer.spotify.com/documentation/general/guides/authorization/<br>
+https://developer.spotify.com/documentation/general/guides/authorization/implicit-grant/<br><br>
 
-## Spécifications optionnelles
+## <strong>Spécifications optionnelles</strong>
 
-### FT-9 Tests et qualité
+### <strong>FT-9 Tests et qualité</strong>
 Chaque fonctionnalités (FT-1 à FT-8) pouvant être testées doivent l’être par une batterie de tests 
-unitaires et d’intégration.
+unitaires et d’intégration.<br><br>
 
-### FT-10 Conteneurisation
-Le Service doit pouvoir être déployé dans un conteneur Docker.
+### <strong>FT-10 Conteneurisation</strong>
+Le Service doit pouvoir être déployé dans un conteneur Docker.<br><br>
 
-### FT-11 Reverse proxy
+### <strong>FT-11 Reverse proxy</strong>
 Une configuration doit être fournie permettant de faire tourner le Service derrière un reverse proxy.
 Authentification
 Les fonctionnalités offertes par notre service (application) utilisent des ressources possédées par 
@@ -120,67 +130,113 @@ l’Utilisateur doit s’authentifier auprès de Spotify et déléguer l’autor
 effectivement l’autoriser à y accéder.
 Heureusement, l’API de Spotify supporte OAuth 2.0 pour la délégation des autorisations(3).
 N.B. : L’Utilisateur doit forcément, à un moment ou un autre, accéder à une URL dans son navigateur 
+et effectuer une action manuelle afin d’autoriser notre service/client à accéder à ses ressources.<br><br>
+
+## <strong>Authentification</strong>
+Les fonctionnalités offertes par notre service (application) utilisent des ressources possédées par 
+l’Utilisateur (ressource owner). Afin que notre service puisse à accéder à ces ressources protégées, 
+l’Utilisateur doit s’authentifier auprès de Spotify et <strong>déléguer l’autorisation</strong> au service pour 
+effectivement l’autoriser à y accéder. 
+Heureusement, l’API de Spotify supporte OAuth 2.0 pour la délégation des autorisations(3). 
+N.B. : L’Utilisateur doit forcément, à un moment ou un autre, accéder à une URL dans son navigateur 
 et effectuer une action manuelle afin d’autoriser notre service/client à accéder à ses ressources.
 
-## Autorisation
+## <strong>Autorisation</strong>
 Les FT-1 et FT-2 sont les seules fonctionnalités accessibles par un Utilisateur anonyme.
 Les FT-6, FT-7, FT-8 nécessitent que l’Utilisateur ait lié son compte Spotify, sans quoi l’accès lui est 
-refusé.
+refusé.<br><br>
 
-## Documentation
-L’ensemble de votre API doit être documenté grâce à la spécification OpenAPI (dernière release). Un 
-SwaggerUI doit être accessible à http://localhost:<port>/api-docs.
-Toutes les fonctionnalités de l’API doivent pouvoir être testées directement via le SwaggerUI généré.
-Un fichier README doit être présent à la racine de votre projet, décrivant toutes les procédures 
-importantes pour faire fonctionner votre API (installation, lancement, …) ainsi que la composition de 
-votre équipe.
+## <strong>Documentation</strong>
+<strong>L’ensemble</strong> de votre API doit être documenté grâce à la spécification OpenAPI (dernière release). Un 
+SwaggerUI doit être accessible à http://localhost:<:port>/api-docs.<br>
 
-## Contraintes et détails techniques
+Toutes les fonctionnalités de l’API doivent pouvoir être testées directement via le SwaggerUI généré.<br>
+
+Un fichier <strong>README</strong> doit être présent à la racine de votre projet, décrivant toutes les procédures 
+importantes pour faire fonctionner votre API (installation, lancement, …) ainsi que la <strong>composition de votre équipe</strong>.<br><br>
+
+## <strong>Contraintes et détails techniques</strong>
 Aucun framework, bibliothèque n’est imposé.
 
-## Authentification
-Le Service n’implémente pas OAuth 2.0 ! Aucun mécanisme propre à OAuth 2.0 (Refresh Token, ...) 
-ne doit être mis en place.
+### <strong>Authentification</strong>
+Le Service n’implémente pas OAuth 2.0 ! Aucun mécanisme propre à OAuth 2.0 (Refresh Token, ...) ne doit être mis en place.<br>
 En revanche, vous avez le choix d’utiliser ou non les JWT pour les tokens émis.
 
-## Persistance des données
-La totalité des données nécessaires doit être stockée dans un seul fichier nommé “users.json”.
-Les mots de passes doivent être stockés hachés (SHA256).
+### <strong>Persistance des données</strong>
+La totalité des données nécessaires doit être stockée dans un seul fichier nommé “users.json”.<br>
+Les mots de passes doivent être stockés hachés (SHA256).<br><br>
 
-## Modalités d’évaluation
-Zone                        Détails                         Coefficient
-
-Fonctionnel         Respect des spécifications                  3
-                        fonctionnelles
-
-Technique           Respect des bonnes pratiques                2
-                    et des spécifications liées aux 
-                    protocoles, standards et 
-                    technologies utilisées pour ce 
-                    projet
-
-Projet              Bon déroulement du projet.                  ?
-                    Gestion des priorités, 
-                    ressources, temps, ...
-
-Documentation       Documentation claire,                       1
-                    complète et fonctionnelle 
-                    (SwaggerUI)
+## <strong>Modalités d’évaluation</strong>
+<br>
+<table>
+    <thead>
+        <tr>
+            <th colspan="3"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Zone</td>
+            <td>Détail</td>
+          	<td>Coefficient</td>
+        </tr>
+        <tr>
+            <td>Fonctionnel</td>
+            <td>Respect des spécifications fonctionnelles</td>
+          	<td>3</td>
+        </tr>
+        <tr>
+            <td>Technique</td>
+            <td>Respect des bonnes pratiques et des spécifications liées aux protocoles, standards et technologies utilisées pour ce projet</td>
+          	<td>3</td>
+        </tr>
+        <tr>
+            <td>Projet</td>
+            <td>Bon déroulement du projet. Gestion des priorités, ressources, temps, ... </td>
+          	<td></td>
+        </tr>
+        <tr>
+            <td>Documentation</td>
+            <td>Documentation claire, complète et fonctionnelle (SwaggerUI)</td>
+          	<td>1</td>
+        </tr>
+    </tbody>
+</table>
+<br>
 
 La note finale est commune à l’ensemble de l’équipe.
 
-Les spécifications optionnelles, si bien implémentées, sont un bonus à la note. Autrement dit, il est 
-possible d’avoir 20 même sans introduire ces fonctionnalités.
+Les spécifications optionnelles, si bien implémentées, sont un <strong>bonus</strong> à la note. Autrement dit, il est possible d’avoir 20 même sans introduire ces fonctionnalités.
 
-La note finale est plafonnée à 20/20.
+La note finale est plafonnée à 20/20.<br><br>
 
-## Ressources utiles
-Description des endpoints : https://developer.spotify.com/documentation/web-api/reference/#/
-Liste complète des scopes exposés par l’API Spotify : https://developer.spotify.com/documentation/general/guides/authorization/scopes/
-Guide sur l’Authorization Code Flow de Spotify : https://developer.spotify.com/documentation/general/guides/authorization/code-flow/
+## <strong>Ressources utiles</strong>
 
-# Installation
+<table>
+    <thead>
+        <tr>
+            <th colspan="2"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Description des endpoints</td>
+            <td><a href="https://developer.spotify.com/documentation/web-api/reference/#/">https://developer.spotify.com/documentation/web-api/reference/#/</a></td>
+        </tr>
+        <tr>
+            <td>Liste complète des scopes exposés par l’API Spotify</td>
+            <td><a href="https://developer.spotify.com/documentation/general/guides/authorization/scopes/">https://developer.spotify.com/documentation/general/guides/authorization/scopes/</a></td>
+        </tr>
+        <tr>
+            <td>Guide sur l’Authorization Code Flow de Spotify</td>
+            <td><a href="https://developer.spotify.com/documentation/general/guides/authorization/code-flow/">https://developer.spotify.com/documentation/general/guides/authorization/code-flow/</a></td>
+        </tr>
+    </tbody>
+</table>
+<br>
+
+# <strong>Installation</strong>
 
 - Copie du repo : 'git clone https://github.com/CSIAUD/Projet-DevAPI.git'
-- Changement de branche : 'git checkout Mateo'
-- Installation de Express dans le dossier Projet-DevAPI : 'npm install express'
+- Changement de branche : 'git checkout <\nombranche>'
+- Installation des Dépendances du Projet-DevAPI : 'npm install'
