@@ -1,9 +1,29 @@
 {
-    "users":[
+    "users": [
         {
             "uid": "HJG453UJFGLE8H4JKHGF7",
             "username": "coucou",
-            "group": "group1",
+            "group": "myGroup",
+            "link": {
+                "access": "",
+                "refresh": ""
+            },
+            "password": ""
+        },
+        {
+            "uid": "HQWERTYUIOPLKJHGF4",
+            "username": "injin",
+            "group": "myGroup",
+            "link": {
+                "access": "",
+                "refresh": ""
+            },
+            "password": ""
+        },
+        {
+            "uid": "xcxzvcxvdfdfdzfzdf",
+            "username": "titi",
+            "group": "superGroup",
             "link": {
                 "access": "",
                 "refresh": ""
@@ -11,10 +31,21 @@
             "password": ""
         }
     ],
-    "groups":[
+    "groups": [
         {
-            "name": "group1",
-            "chief": "coucou"
+            "name": "myGroup",
+            "chief": "coucou",
+            "members": [
+                "coucou",
+                "injin"
+            ]
+        },
+        {
+            "name": "superGroup",
+            "chief": "titi",
+            "members": [
+                "titi"
+            ]
         }
     ]
 }
