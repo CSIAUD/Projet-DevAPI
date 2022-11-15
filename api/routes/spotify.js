@@ -3,6 +3,6 @@ const spotifyController = require("../controllers/spotify.js");
 
 router.get("/refresh_token", spotifyController.refreshToken);
 router.get("/callback", spotifyController.callback);
-router.post("/link", spotifyController.link);
+router.get("/link", spotifyController.link);
 
 module.exports = router
