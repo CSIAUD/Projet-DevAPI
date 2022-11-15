@@ -4,7 +4,10 @@
             "uid": "HJG453UJFGLE8H4JKHGF7",
             "username": "coucou",
             "group": "group1",
-            "link": "",
+            "link": {
+                "access": "",
+                "refresh": ""
+            },
             "password": ""
         }
     ],
