@@ -1,18 +1,12 @@
 // 📚 Librairies
 const fs = require('fs');
-// const { readFile } = require('fs/promises');
-// const asyncReadFile = readFile;
-
 const { writeFile, readFile } = require('fs');
-// const { writeFile } = require('fs');
 const axios = require('axios');
 
 
 var querystring = require('querystring');
 var request = require('request'); // "Request" library
 const file = '../api/data/users.json';
-
-var stateKey = 'spotify_auth_state';
 
 var client_id = process.env.CLIENT_ID;
 var client_secret = process.env.CLIENT_SECRET;
@@ -177,6 +171,53 @@ isLinked = async (username) => {
         }
         // ==============================
         return true;
+    })
+  } catch(err) {
+      console.log(err);
+      throw 'Unable to search users list.'
+  }
+}
+
+getToken = async (username) => {
+  try {
+    return await readFile(file, (err, fileData) => {
+        const parsedData = JSON.parse(fileData);
+        let users = parsedData.users;
+
+        if(!users.length) return [null, 'No User'];
+        // ==============================
+        const user = users.find(u => (u.username).toLowerCase() === (username).toLowerCase());
+        if(!user.link) return [null, 'Not linked'];
+        // ==============================
+        if(user.link.length != 2){
+            let index = users.indexOf(user);
+            delete parsedData.users[index].link
+
+            writeFile(file, JSON.stringify(parsedData, null, 2), (err) => {
+              if (err) {
+                console.log("Une erreur est survenue lors de la mise à jour du fichier users.json.");
+                return;
+              }
+            });
+
+            return [null, 'Not linked'];
+        } 
+        // ==============================
+        if(user.link.access == "" || user.link.refresh == ""){
+            let index = users.indexOf(user);
+            delete parsedData.users[index].link
+
+            writeFile(file, JSON.stringify(parsedData, null, 2), (err) => {
+              if (err) {
+                console.log("Une erreur est survenue lors de la mise à jour du fichier users.json.");
+                return;
+              }
+            });
+
+            return [null, 'Not linked'];
+        }
+        // ==============================
+        return [user.link.access, null];
     })
   } catch(err) {
       console.log(err);
