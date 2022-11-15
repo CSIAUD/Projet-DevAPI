@@ -7,10 +7,11 @@
   type string
   Example value: "artists"
 */
-module.exports.createPlaylist = async (req, res) => {
+module.exports.createPlaylistTracks = async (req, res) => {
     try {
 
         // 'user' peut demander la création d’une playlist sur son compte Spotify contenant les 10 musiques préférées* d’un autre Utilisateur (qui peut être lui-même) passé en paramètre.
+        // Le 'user' passé en paramètre doit appartenir à notre projet (user connecté à Spotify)
         // * : https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-top-artists-and-tracks
 
         // Récupération des données de l'URL
@@ -19,7 +20,7 @@ module.exports.createPlaylist = async (req, res) => {
         //"items": [ {} ],
         playlist = [];
         for (let i = 0; i < 10; i++) {
-            playlist += playlist[i];
+            playlist += items[i];
             // DEBUG
             // console.log(playlist);
         }
