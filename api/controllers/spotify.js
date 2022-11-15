@@ -1,3 +1,7 @@
+
+// const token = require('../controllers/spotify'); // Import du controller
+// token.getToken
+
 // 📚 Librairies
 const fs = require('fs');
 const { writeFile, readFile } = require('fs');
