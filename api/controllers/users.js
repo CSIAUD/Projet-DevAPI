@@ -2,8 +2,13 @@
 const fs = require('fs');
 const { uuid } = require('uuidv4');
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { group, assert } = require('console');
 const { use } = require('../routes/users');
+const path = require('path');
+
+// Variable global
+const USER_JSON = '../data/users.json';
 
 module.exports.register = async (req, res) => {
     try {
@@ -19,7 +24,8 @@ module.exports.register = async (req, res) => {
         const user = {
             uid: uuid(),
             username: req.body.username,
-            password: hashedPassword
+            password: hashedPassword,
+            group : ""
         };
 
         addUser(user);
@@ -35,7 +41,8 @@ module.exports.register = async (req, res) => {
 // Ajout d'un nouvel utilisateur dans le fichier JSON :
 addUser = (user) => {
     const { writeFile, readFile } = require('fs');
-    const file = '../api/data/users.json';
+    //const file = '../api/users.json';
+    const file = USER_JSON;
 
     readFile(file, (err, data) => {
         if (err) {
@@ -57,7 +64,8 @@ addUser = (user) => {
 // Recherche d'un utilisateur existant :
 const findOne = (username) => {
     try {
-        const file = require('../data/users.json');
+        //const file = require('../users.json');
+        const file = require(USER_JSON);
         const users = file.users;
         const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
         return user;
@@ -72,7 +80,8 @@ const findOne = (username) => {
 // List all groups
 module.exports.listGroup = async (req, res) => {
 
-    const file = require('../users.json');
+    //const file = require('../users.json');
+    const file = require(USER_JSON);
 
     var listGroups = [];
 
@@ -117,14 +126,14 @@ module.exports.joinGroup = async (req, res) => {
     
     // If user is already in a group
     if (user.group != undefined && user.group != "") {
-        quitterGroup(user.group , user.username)
+        quitterGroup(user.group , user.username);
         
         if ( isUserChiefGroup(user.group , user.username) ) {
             if (isMembersInGroup(user.group)) {
                 console.log("give chief...")
-                giveChiefToSomeoneElseRandom(user.group)
+                giveChiefToSomeoneElseRandom(user.group);
             } else {
-                deleteGroup(user.group)
+                deleteGroup(user.group);
             }
         }          
     } 
@@ -141,17 +150,84 @@ module.exports.joinGroup = async (req, res) => {
         } 
         createGroup(newGroup);        
     }
-    updateUserGroup(groupName, user.username)    
+
+    updateUserGroup(groupName, user.username);    
                
      
 
     return res.status(200).json("User has joined the group " + groupName);
 }
 
+module.exports.listMembersOfGroup = async (req, res) => {    
+
+    // Get the Token
+    const auth = req.header('Authorization');
+
+    const token = auth.split(" ")[1];
+
+    var validToken;
+
+    // Check is the Token is correct one. 
+    try {
+        validToken = jwt.verify(token, process.env.JWT_SECRET);
+       
+    } catch (error) {
+        return res.status(401).json("ACCESS FORBIDDEN");
+    }
+
+    const currentUser = getUserByUid(validToken.uid);
+
+    var listAllMembers = [];
+    
+     if( currentUser.group != undefined && currentUser.group != "") {
+
+        const fs = require('fs');
+        const file = '../api/data/users.json';
+        
+
+        const data = fs.readFileSync(file, 'utf-8');
+        const parsedData = JSON.parse(data);
+
+        // Get All members from the group where the current user is in.
+        parsedData.groups.forEach(g => {
+
+            if(g.name == currentUser.group) {
+
+                
+                
+                g.members.forEach(mName => {
+                    var result = {
+                        memberName : "",
+                        isChief : false
+                    }
+
+                    if(g.chief === mName) {                    
+                        result.isChief = true;
+                    }
+
+                    result.memberName = mName;
+
+                    listAllMembers.push(result);
+    
+                });
+
+            }
+        });
+        
+        return res.status(200).json(listAllMembers);
+
+    } else {
+
+        return res.status(401).json("Error listMembersOfGroup");
+    }
+
+}
+
 // Create group
 function createGroup(newGroup) {
     const fs = require('fs');
-    const file = '../api/users.json';
+    //const file = '../api/users.json';
+    const file = USER_JSON;
    
     try {
         console.log("Creating group...");
@@ -172,7 +248,8 @@ function createGroup(newGroup) {
 function isExistGroup(nameGroup) {
     console.log("Search group : " + nameGroup);
   
-    const file = require('../users.json');
+    //const file = require('../users.json');
+    const file = require(USER_JSON);
 
     const groups = file.groups;
     const group = groups.find(g => g.name.toLowerCase() === nameGroup.toLowerCase());
@@ -186,7 +263,8 @@ function isExistGroup(nameGroup) {
 
 // Get the username with user uid
 function getUserByUid(uid) {
-    const file = require('../users.json');
+    //const file = require('../users.json');
+    const file = require('../data/users.json');
 
     const users = file.users;
     const user = users.find(u => u.uid === uid);
@@ -201,7 +279,8 @@ function getUserByUid(uid) {
 // Check if user id chief of group
 function isUserChiefGroup(groupName, userName) {
 
-    const file = require('../users.json');
+    //const file = require('../users.json');
+    const file = require(USER_JSON);
 
     const groups = file.groups;
     const group = groups.find(g => g.name === groupName);
@@ -216,7 +295,8 @@ function isUserChiefGroup(groupName, userName) {
 // Update the group name of the user
 function updateUserGroup(groupName, userName) {
     const fs = require('fs');
-    const file = '../api/users.json';
+    //const file = '../api/users.json';
+    const file = USER_JSON;
 
     try {
         console.log("Updating user...");
@@ -242,7 +322,8 @@ function updateUserGroup(groupName, userName) {
 // User quit his group
 function quitterGroup(groupName, userName) {
     const fs = require('fs');
-    const file = '../api/users.json';
+    //const file = '../api/users.json';
+    const file = USER_JSON;
 
     try {
         console.log("Quit the group...");
@@ -271,7 +352,8 @@ function quitterGroup(groupName, userName) {
 // Delete a group
 function deleteGroup(groupName) {
     const fs = require('fs');
-    const file = '../api/users.json';
+    //const file = '../api/users.json';
+    const file = USER_JSON;
 
     try {
         console.log("Delete the group...");
@@ -299,7 +381,8 @@ function deleteGroup(groupName) {
 // Give chief randomly to someone in the group
 function giveChiefToSomeoneElseRandom(groupName) {
     const fs = require('fs');
-    const file = '../api/users.json';
+    //const file = '../api/users.json';
+    const file = USER_JSON;
 
     try {
         console.log("Give chief to random member...");
@@ -328,7 +411,8 @@ function giveChiefToSomeoneElseRandom(groupName) {
 
 // Check if user is already in any group
 function userIsAlreadyInGroup(userName) {
-    const file = require('../users.json');
+    //const file = require('../users.json');
+    const file = require(USER_JSON);
 
     const users = file.users;
     const user = users.find(u => u.username === userName);
@@ -344,7 +428,8 @@ function userIsAlreadyInGroup(userName) {
 // Check if there is anyone in the group
 function isMembersInGroup(groupName) {
     const fs = require('fs');
-    const file = '../api/users.json';
+    //const file = '../api/users.json';
+    const file = USER_JSON;
 
     let isMembersInGroup = false
 
@@ -354,9 +439,8 @@ function isMembersInGroup(groupName) {
 
         parsedData.groups.forEach(group => {
             if (group.name == groupName) {
-                console.log(group.members.length != 0)
-                console.log(group.members.length > 0)
-               if(group.members.length != 0) {
+               
+               if(group.members.length > 0) {
                 isMembersInGroup = true
                }
             }           
@@ -370,7 +454,8 @@ function isMembersInGroup(groupName) {
 
 function addMemberToGroup(groupName, userName) {
     const fs = require('fs');
-    const file = '../api/users.json';
+    //const file = '../api/users.json';
+    const file = USER_JSON;
 
     try {
         console.log("Add a member to Group.");

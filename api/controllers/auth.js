@@ -5,7 +5,9 @@ module.exports.getToken = async (req, res) => {
     try {
         const auth = req.header('Authorization'); // ou req.headers.authorization, avec un S à headers
         const credentials = auth.split(' ')[1];
+        //console.log('auth : ' + auth)
         const raw = Buffer.from(credentials, 'base64').toString('utf8');
+        console.log('raw : ' + raw)
         const [username, password] = raw.split(':');
 
         // 👩‍🔧 Recherche de l'utilisateur :
@@ -39,7 +41,7 @@ module.exports.getToken = async (req, res) => {
 // Recherche d'un utilisateur existant :
 const findOne = (username) => {
     try {
-        const file = require('../data/users.json');
+        const file = require('../users.json');
         const users = file.users;
         const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
         return user;

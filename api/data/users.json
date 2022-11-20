@@ -3,7 +3,73 @@
     {
       "uid": "d29183fc-d82e-41b6-8b6a-4251a1dc432d",
       "username": "Nicolas",
+      "group": "",
+      "link": {
+        "access": "",
+        "refresh": ""
+      },
       "password": "$2b$10$uxE3LlEhiG8dOI616Dq1xOuOSUa7xp1IKXgdE/61pwD3Bs3yDClvO"
+    },
+    {
+      "uid": "HJG453UJFGLE8H4JKHGF7",
+      "username": "coucou",
+      "group": "myGroup",
+      "link": {
+        "access": "",
+        "refresh": ""
+      },
+      "password": ""
+    },
+    {
+      "uid": "HQWERTYUIOPLKJHGF4",
+      "username": "injin",
+      "group": "myGroup",
+      "link": {
+        "access": "",
+        "refresh": ""
+      },
+      "password": ""
+    },
+    {
+      "uid": "xcxzvcxvdfdfdzfzdf",
+      "username": "titi",
+      "group": "superGroup",
+      "link": {
+        "access": "",
+        "refresh": ""
+      },
+      "password": ""
+    },
+    {
+      "uid": "f5a3039f-d7fe-4a5a-9c52-3db59bd37a51",
+      "username": "ikim",
+      "password": "$2b$10$/2moxlppymTEClO2Zi3V2.iQAP7RpAm7ve8Mw9IozJjHObsxUvCUC",
+      "group": "myGroup"
+    },
+    {
+      "uid": "96addc17-e1ad-4200-8df6-d975f2ca6999",
+      "username": "ikim2",
+      "password": "$2b$10$urLjaWdh53lfmMvt.S3zgukBUGKiNZ0dIvwpqYKzcUhHgOCcuMiIq",
+      "group": "myGroup"
+    }
+  ],
+  "groups": [
+    {
+      "name": "myGroup",
+      "chief": "coucou",
+      "members": [
+        "coucou",
+        "injin",
+        "ikim",
+        "ikim2"
+      ]
+    },
+    {
+      "name": "superGroup",
+      "chief": "titi",
+      "members": [
+        "titi"
+      ]
     }
   ]
 }
