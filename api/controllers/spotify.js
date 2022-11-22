@@ -248,14 +248,14 @@ module.exports.getSpotifyUsername = async (userSpotifyToken) => {
 
 
 // Display user's play song : Title, Artist name, Album title
-module.exports.getUserPlayingSongInfo = async (userSpotifyToken) => {
-  return axios.get('https://api.spotify.com/v1/me/playlists', {
+module.exports.getUserPlayingSongInfoAndDevice = async (userSpotifyToken) => {
+  return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
     headers : {
       Authorization : "Bearer " + userSpotifyToken
     }
   })
   .then(function (response) {
-    return response.data.items[0];
+    return response;
   })
   .catch(async function (error) {
     return "ERROR : getUserPlayingSongInfo";

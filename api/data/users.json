@@ -5,7 +5,7 @@
       "username": "Cyp",
       "password": "$2b$10$qodHI9VGMGC2sncgjyaCl.OuCKLJ.ouR0ApbsU2f.rjLI74aqYxyq",
       "link": {
-        "access": "yApkDQ-ylUyy7h3SEaKHXbJ_T83ZydSzP_J-B8EZq5_ehXS7t9-uNCAbY6NL8Wmq-PmaVG_bwIE-XjdMtDkojKBQ4uZYJFsC2gJQf7DtwJbYpUWISH0fnEfNPNn1OojuY3jwaXKGKyGWjJ7Tk08wQacxR95bpz2h3rEpxwoTFR5UspjOs7mMy-WWGc_VO2qxqT9oaDVH4Zfw9L-kQpUA",
+        "access": "BQCyrVUm2hguDYbNNz_4rql_silY48lVT59PBUH-2iRRusqM99v6ADHzZgpi8IqUIMykgGlB9jkTE73ExsHe79fJ_k0UmJ7j31z8C1nvNGgkY1hKbN98-qtr7y286rn7yK593WNYOgfe8GmcvdtdQyiEp3gbPeJg9rpulPinr0IM_Cyxyb2oKt5nbOwrnh6OYPnKWVmHoSrviagQ06mB_1YBnQ",
         "refresh": "AQAQEhZmvgEUwcJigUQHgHZ12RMBaMVyfsvPmUmUrg7auBNZsT-X-4kQL_pBXL-6xQZEYpUUf1R1h36Z8oYP8MVJigq8MPUbsRPPOb9TXRqvcb20b9guLBMRlCs96k0Zg-g"
       },
       "group": "myGroup"
@@ -24,7 +24,7 @@
       "uid": "96addc17-e1ad-4200-8df6-d975f2ca6999",
       "username": "ikim2",
       "password": "$2b$10$urLjaWdh53lfmMvt.S3zgukBUGKiNZ0dIvwpqYKzcUhHgOCcuMiIq",
-      "group": "myGroup3",
+      "group": "myGroup",
       "link": {
         "access": "",
         "refresh": ""
@@ -37,13 +37,7 @@
       "chief": "ikim",
       "members": [
         "ikim",
-        "Cyp"
-      ]
-    },
-    {
-      "name": "myGroup3",
-      "chief": "ikim2",
-      "members": [
+        "Cyp",
         "ikim2"
       ]
     }

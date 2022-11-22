@@ -127,9 +127,16 @@ module.exports.listMembersOfGroup = async (req, res) => {
                 let link = userInformation.link
 
                 if (link.access != undefined && link.access != "") {
+
                     // Get spotify username
                     let spotifyUsername = await spotify.getSpotifyUsername(link.access);
                     result.spotifyPseudo = spotifyUsername;
+
+                    // Get spotify device name and current music info
+                    let userPlayingSongAndDevice = await spotify.getUserPlayingSongInfoAndDevice(link.access);
+                    result.device = userPlayingSongAndDevice.device.name;
+                    result.currentAlbumTitle = userPlayingSongAndDevice.item.album.name;
+                    result.artist = userPlayingSongAndDevice.artists[0].name;
                 }
 
             }
