@@ -6,10 +6,11 @@
 
 // 📚 Librairies
 const fs = require('fs');
-const { writeFile, readFileSync, readFile } = require('fs');
+const { writeFile, readFileSync } = require('fs');
 const axios = require('axios');
 const jwt = require("jsonwebtoken");
 
+const usersController = require('../controllers/users');
 
 var querystring = require('querystring');
 var request = require('request'); // "Request" library
@@ -19,6 +20,7 @@ var client_id = process.env.CLIENT_ID;
 var client_secret = process.env.CLIENT_SECRET;
 var redirect_uri = process.env.REDIRECT_URI;
 
+// Refresh du access_token de Spotify
 module.exports.refreshToken = (req, res) => {
     var refresh_token = req.query.refresh_token;
     var authOptions = {
@@ -41,6 +43,7 @@ module.exports.refreshToken = (req, res) => {
     });
 }
 
+// Lien avec le compte Spotify
 // Header Authorization => Bearer + Token user
 module.exports.link = async (req, res) => {
     let user;
@@ -59,8 +62,8 @@ module.exports.link = async (req, res) => {
       res.send("Invalid Header Authorization");
       return;
     }
+    getToken(user)
     
-    // getToken(user)
     let linked = await isLinked(user);
     if (linked) {
         res.send("Compte déjà lié à Spotify");
@@ -82,6 +85,7 @@ module.exports.link = async (req, res) => {
     }
 }
 
+// Traitement de la connexion avec Spotify
 module.exports.callback = async (req, res) => {
   //  console.log(req.query);
    
@@ -122,6 +126,7 @@ module.exports.callback = async (req, res) => {
    }
 }
 
+// Enregistremment des Acess_token et Refresh_token dans users.json
 setTokens = async (resp) => {
   let data = resp.data;
   let uid = resp.config.state;
@@ -157,6 +162,7 @@ setTokens = async (resp) => {
   }
 }
 
+// Vérification du lien avec Spotify basé sur users.json
 isLinked = async (uid) => {
   try {
     const fileContent = readFileSync(file);
@@ -202,16 +208,33 @@ isLinked = async (uid) => {
   } 
 }
 
-getToken = async (username) => {
+// Récupération d'un access_token valide de Spotify
+getToken = async (uid) => {
   console.log("== getToken =====")
-  // https://api.spotify.com/v1/me
+  
+  let user = usersController.findOneById(uid)
   try {
-    console.log("TRY")
-    if(await isLinked(username)){
-      console.log("Linked")
+    if(await isLinked(uid)){
+      let access = user.link.access
+      let refresh = user.link.refresh
+
+      const authOptions = {
+        url: 'https://api.spotify.com/v1/me',
+        headers: {
+          'Authorization': 'Bearer ' + access
+        }
+      };
+        
+      axios.get(authOptions.url, {
+        headers: authOptions.headers
+      })
+      .then((resp) => { 
+        return access;
+      })
+
     }
   } catch(err) {
-    console.log("CATCH", err);
+    // console.log("CATCH", err);
     throw 'Unable to search users list.'
   }
 }
