@@ -5,12 +5,16 @@ const bcrypt = require("bcrypt");
 
 module.exports.register = async (req, res) => {
     try {
+
+        if(!req.body.username || !req.body.password)
+            return res.status(400).json("Aucun identifiant n'a été saisi.");
+
         // Hashage du mot de passe :
         const hashedPassword = bcrypt.hashSync(req.body.password, 10);
 
         // Vérification que l'utilisateur n'existe pas déjà :
         if(findOne(req.body.username)) {
-            return res.status(400).json("Ce nom d'utilisateur existe déjà.");
+            return res.status(422).json("Ce nom d'utilisateur existe déjà.");
         }
 
         // Création du nouvel utilisateur :

@@ -4,6 +4,10 @@ const bcrypt = require("bcrypt");
 module.exports.getToken = async (req, res) => {
     try {
         const auth = req.header('Authorization'); // ou req.headers.authorization, avec un S à headers
+
+        if(!auth)
+            return res.status(401).json("Aucun identifiant n'a été fourni. Une authentification Basic Auth est requise.");
+
         const credentials = auth.split(' ')[1];
         const raw = Buffer.from(credentials, 'base64').toString('utf8');
         const [username, password] = raw.split(':');
