@@ -134,9 +134,13 @@ module.exports.listMembersOfGroup = async (req, res) => {
 
                     // Get spotify device name and current music info
                     let userPlayingSongAndDevice = await spotify.getUserPlayingSongInfoAndDevice(link.access);
-                    result.device = userPlayingSongAndDevice.device.name;
-                    result.currentAlbumTitle = userPlayingSongAndDevice.item.album.name;
-                    result.artist = userPlayingSongAndDevice.artists[0].name;
+                    console.log(userPlayingSongAndDevice)
+                    if (userPlayingSongAndDevice != undefined && userPlayingSongAndDevice != '') {
+                        result.device = userPlayingSongAndDevice.device.name;
+                        result.currentAlbumTitle = userPlayingSongAndDevice.item.album.name;
+                        result.artist = userPlayingSongAndDevice.artists[0].name;
+                    }
+                   
                 }
 
             }

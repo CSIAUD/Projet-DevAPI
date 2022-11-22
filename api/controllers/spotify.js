@@ -255,7 +255,7 @@ module.exports.getUserPlayingSongInfoAndDevice = async (userSpotifyToken) => {
     }
   })
   .then(function (response) {
-    return response;
+    return response.data;
   })
   .catch(async function (error) {
     return "ERROR : getUserPlayingSongInfo";
