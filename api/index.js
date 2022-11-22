@@ -8,6 +8,8 @@ var http = require('http');
 const authRoute = require("./routes/auth");
 const usersRoute = require("./routes/users");
 const spotifyRoute = require("./routes/spotify");
+const playlistRoute = require("./routes/playlist");
+const synchronisationRoute = require("./routes/synchronisation");
 
 let app = express();
 
@@ -37,6 +39,20 @@ app.use("/api/token", authRoute);
 
 // ===== API Spotify =====
 app.use('/api/spotify', spotifyRoute);
+
+// =====================================
+// ➡️ ENDPOINT : http://localhost:8080/api/me/top/{type}
+// ▶️ METHOD : []
+// 💡 USAGE : Créer une playlist
+// ❔ Parameters :
+app.use('/api/playlist', playlistRoute);
+
+// =====================================
+// ➡️ ENDPOINT : http://localhost:8080/api/me/top/{type}
+// ▶️ METHOD : []
+// 💡 USAGE : Synchroniser une musique
+// ❔ Parameters :
+app.use('/api/synchronisation', synchronisationRoute);
 
 app.listen(port, () =>  {
     console.log('le serveur fonctionne sur le port ' + port)

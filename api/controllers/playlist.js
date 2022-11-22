@@ -11,7 +11,7 @@ token.getToken
 */
 
 // Based on 'me' and 'tracks'
-module.exports.createPlaylistTracks = async (req, res) => {
+module.exports.createPlaylistTracksFromMyself = async (req, res) => {
     try {
 
         // 'user' peut demander la création d’une playlist sur son compte Spotify contenant les 10 musiques préférées* d’un autre Utilisateur (qui peut être lui-même) passé en paramètre.
@@ -39,7 +39,41 @@ module.exports.createPlaylistTracks = async (req, res) => {
 }
 
 // Based on 'me' and 'artists'
-module.exports.createPlaylistArtists = async (req, res) => {
+module.exports.createPlaylistArtistsFromMyself = async (req, res) => {
+
+    // Récupération des données de l'URL
+
+    // Création d'une playlist avec les données récupérées
+    //"items": [ {} ],
+    console.log(req);
+
+    playlist = [];
+    for (let i = 0; i < 10; i++) {
+        playlist += items[i];
+        // DEBUG
+        // console.log(playlist);
+    }
+}
+
+// Based on 'someone' and 'tracks'
+module.exports.createPlaylistTracksFromSomeone = async (req, res) => {
+
+    // Récupération des données de l'URL
+
+    // Création d'une playlist avec les données récupérées
+    //"items": [ {} ],
+    console.log(req);
+
+    playlist = [];
+    for (let i = 0; i < 10; i++) {
+        playlist += items[i];
+        // DEBUG
+        // console.log(playlist);
+    }
+}
+
+// Based on 'someone' and 'artists'
+module.exports.createPlaylistArtistsFromSomeone = async (req, res) => {
 
     // Récupération des données de l'URL
 

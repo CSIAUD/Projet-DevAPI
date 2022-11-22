@@ -67,7 +67,8 @@ module.exports.callback = async (req, res) => {
    const code = req.query.code || null;
    const client_secret = process.env.CLIENT_SECRET
    const state = req.query.state || null;
-   console.log(state)
+  // DEBUG
+  // console.log(state)
  
    if (state === null) {
      res.redirect('/#' +
