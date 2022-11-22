@@ -7,6 +7,7 @@ var http = require('http');
 // 🚗 Routes
 const authRoute = require("./routes/auth");
 const usersRoute = require("./routes/users");
+const groupsRoute = require("./routes/groups");
 const spotifyRoute = require("./routes/spotify");
 
 let app = express();
@@ -17,6 +18,8 @@ var port = process.env.PORT;
 
 app.use("/api/token", authRoute);
 app.use("/api/users", usersRoute);
+app.use("/api/groups", groupsRoute);
+
 
 // ===== API Spotify =====
 app.use('/api/spotify', spotifyRoute);

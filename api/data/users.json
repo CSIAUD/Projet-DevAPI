@@ -1,74 +1,44 @@
 {
   "users": [
     {
-      "uid": "d29183fc-d82e-41b6-8b6a-4251a1dc432d",
-      "username": "Nicolas",
-      "group": "",
+      "uid": "2531a324-257a-4a19-8802-f3620bf8bbf2",
+      "username": "Cyp",
+      "password": "$2b$10$qodHI9VGMGC2sncgjyaCl.OuCKLJ.ouR0ApbsU2f.rjLI74aqYxyq",
       "link": {
-        "access": "",
-        "refresh": ""
+        "access": "yApkDQ-ylUyy7h3SEaKHXbJ_T83ZydSzP_J-B8EZq5_ehXS7t9-uNCAbY6NL8Wmq-PmaVG_bwIE-XjdMtDkojKBQ4uZYJFsC2gJQf7DtwJbYpUWISH0fnEfNPNn1OojuY3jwaXKGKyGWjJ7Tk08wQacxR95bpz2h3rEpxwoTFR5UspjOs7mMy-WWGc_VO2qxqT9oaDVH4Zfw9L-kQpUA",
+        "refresh": "AQAQEhZmvgEUwcJigUQHgHZ12RMBaMVyfsvPmUmUrg7auBNZsT-X-4kQL_pBXL-6xQZEYpUUf1R1h36Z8oYP8MVJigq8MPUbsRPPOb9TXRqvcb20b9guLBMRlCs96k0Zg-g"
       },
-      "password": "$2b$10$uxE3LlEhiG8dOI616Dq1xOuOSUa7xp1IKXgdE/61pwD3Bs3yDClvO"
-    },
-    {
-      "uid": "HJG453UJFGLE8H4JKHGF7",
-      "username": "coucou",
-      "group": "myGroup",
-      "link": {
-        "access": "",
-        "refresh": ""
-      },
-      "password": ""
-    },
-    {
-      "uid": "HQWERTYUIOPLKJHGF4",
-      "username": "injin",
-      "group": "myGroup",
-      "link": {
-        "access": "",
-        "refresh": ""
-      },
-      "password": ""
-    },
-    {
-      "uid": "xcxzvcxvdfdfdzfzdf",
-      "username": "titi",
-      "group": "superGroup",
-      "link": {
-        "access": "",
-        "refresh": ""
-      },
-      "password": ""
+      "group": "myGroup"
     },
     {
       "uid": "f5a3039f-d7fe-4a5a-9c52-3db59bd37a51",
       "username": "ikim",
       "password": "$2b$10$/2moxlppymTEClO2Zi3V2.iQAP7RpAm7ve8Mw9IozJjHObsxUvCUC",
-      "group": "myGroup"
+      "group": "myGroup",
+      "link": {
+        "access": "",
+        "refresh": ""
+      }
     },
     {
       "uid": "96addc17-e1ad-4200-8df6-d975f2ca6999",
       "username": "ikim2",
       "password": "$2b$10$urLjaWdh53lfmMvt.S3zgukBUGKiNZ0dIvwpqYKzcUhHgOCcuMiIq",
-      "group": "myGroup"
+      "group": "myGroup",
+      "link": {
+        "access": "",
+        "refresh": ""
+      }
     }
   ],
   "groups": [
     {
       "name": "myGroup",
-      "chief": "coucou",
+      "chief": "ikim",
       "members": [
-        "coucou",
-        "injin",
         "ikim",
+        "Cyp",
         "ikim2"
-      ]
-    },
-    {
-      "name": "superGroup",
-      "chief": "titi",
-      "members": [
-        "titi"
       ]
     }
   ]

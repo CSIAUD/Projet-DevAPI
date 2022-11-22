@@ -45,7 +45,7 @@ module.exports.link = async (req, res) => {
     } else { 
       
         // your application requests authorization
-        var scope = 'user-read-private user-read-email';
+        var scope = 'user-read-private user-read-email user-read-playback-state';
         res.redirect(
             'https://accounts.spotify.com/authorize?' +
             querystring.stringify(
@@ -227,4 +227,48 @@ getToken = async (username) => {
       console.log(err);
       throw 'Unable to search users list.'
   }
+}
+
+// Display user nickname from spotify
+module.exports.getSpotifyUsername = async (userSpotifyToken) => {
+  return axios.get('https://api.spotify.com/v1/me/', {
+    headers : {
+      Authorization : "Bearer " + userSpotifyToken
+    }
+  })
+  .then(function (response) {    
+    return response.data.display_name;
+  })
+  .catch(async function (error) {
+    // Means access token is invalid
+    let newAccessToken = await refreshSpotifyToken();
+    // Change the old acces token of user in the user file
+    // call again getSpotifyUsername
+    // getSpotifyUsername(newAccessToken)
+  }) 
+}
+
+
+refreshSpotifyToken = async () => {
+  var refresh_token = "AQAQEhZmvgEUwcJigUQHgHZ12RMBaMVyfsvPmUmUrg7auBNZsT-X-4kQL_pBXL-6xQZEYpUUf1R1h36Z8oYP8MVJigq8MPUbsRPPOb9TXRqvcb20b9guLBMRlCs96k0Zg-g";
+    var authOptions = {
+        url: 'https://accounts.spotify.com/api/token',
+        headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
+        form: {
+            grant_type: 'refresh_token',
+            refresh_token: refresh_token
+        },
+        json: true
+    };
+  
+    
+    request.post(authOptions, function(error, response, body) {
+        if (!error && response.statusCode === 200) {            
+            var access_new_token = body.access_token;
+            
+            return access_new_token
+        }
+
+        console.log("acc new token" + access_new_token);
+    });
 }
