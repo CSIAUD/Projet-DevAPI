@@ -3,7 +3,12 @@ const fs = require('fs');
 const { uuid } = require('uuidv4');
 const bcrypt = require("bcrypt");
 
+// CREATION D'UN COMPTE
 module.exports.register = async (req, res) => {
+    /* #swagger.responses[200] = { description: "Inscription réussie." } 
+        #swagger.responses[400] = { description: "Aucun identifiant n'a été saisi." } 
+        #swagger.responses[422] = { description: "Ce nom d'utilisateur n'est pas disponible." } 
+    */
     try {
 
         if(!req.body.username || !req.body.password)

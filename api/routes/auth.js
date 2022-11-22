@@ -41,6 +41,7 @@ const securityController = require("../controllers/auth.js");
  *         description: "Erreur serveur."
  * 
 */
+
 router.get("/", securityController.getToken);  // GET A TOKEN FOR LOGGING IN
 
 module.exports = router

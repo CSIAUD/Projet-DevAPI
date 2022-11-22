@@ -2,6 +2,14 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 module.exports.getToken = async (req, res) => {
+    /* #swagger.security = [{
+        "basicAuth": []
+        }] 
+
+        #swagger.responses[200] = { description: "Token généré avec succès." } 
+        #swagger.responses[404] = { description: "Ce compte n'existe pas." } 
+    */
+
     try {
         const auth = req.header('Authorization'); // ou req.headers.authorization, avec un S à headers
 
