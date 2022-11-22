@@ -41,6 +41,7 @@ module.exports.refreshToken = (req, res) => {
     });
 }
 
+// Header Authorization => Bearer + Token user
 module.exports.link = async (req, res) => {
     let user;
     let tab = (req.headers.authorization).split(' ');
