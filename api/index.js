@@ -15,8 +15,25 @@ app.use(express.json()); // Body parser for POST requests
 
 var port = process.env.PORT;
 
-app.use("/api/token", authRoute);
+// =====================================
+// ➡️ ENDPOINT : http://localhost:8080/api/users
+// ▶️ METHOD : [POST]
+// 💡 USAGE : Inscrire un utilisateur
+// ❔ Parameters :
+
+// body: {
+//   "username": "string",
+//   "password": "string"
+// }
 app.use("/api/users", usersRoute);
+
+// =====================================
+// ➡️ ENDPOINT : http://localhost:8080/api/token
+// ▶️ METHOD : [GET]
+// 💡 USAGE : Connecter un utilisateur
+// ❔ Paramaters :
+// Auth Basic : username;password
+app.use("/api/token", authRoute);
 
 // ===== API Spotify =====
 app.use('/api/spotify', spotifyRoute);

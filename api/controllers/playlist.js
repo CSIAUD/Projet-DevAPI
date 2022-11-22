@@ -1,12 +1,16 @@
+const token = require('../controllers/spotify.js'); // Import du controller
+token.getToken
+
 
 // FT-8 Playlist | /me/top/{type}
-
 /*
   {type}
   The type of entity to return. Valid values: 'artists' or 'tracks'
   type string
   Example value: "artists"
 */
+
+// Based on 'me' and 'tracks'
 module.exports.createPlaylistTracks = async (req, res) => {
     try {
 
@@ -18,6 +22,8 @@ module.exports.createPlaylistTracks = async (req, res) => {
 
         // Création d'une playlist avec les données récupérées
         //"items": [ {} ],
+        console.log(req);
+
         playlist = [];
         for (let i = 0; i < 10; i++) {
             playlist += items[i];
@@ -29,5 +35,22 @@ module.exports.createPlaylistTracks = async (req, res) => {
     } catch (err) {
         console.log(err)
         return res.status(500).json(err);
+    }
+}
+
+// Based on 'me' and 'artists'
+module.exports.createPlaylistArtists = async (req, res) => {
+
+    // Récupération des données de l'URL
+
+    // Création d'une playlist avec les données récupérées
+    //"items": [ {} ],
+    console.log(req);
+
+    playlist = [];
+    for (let i = 0; i < 10; i++) {
+        playlist += items[i];
+        // DEBUG
+        // console.log(playlist);
     }
 }
