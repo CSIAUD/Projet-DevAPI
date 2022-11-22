@@ -240,16 +240,44 @@ module.exports.getSpotifyUsername = async (userSpotifyToken) => {
     return response.data.display_name;
   })
   .catch(async function (error) {
-    // Means access token is invalid
-    let newAccessToken = await refreshSpotifyToken();
-    // Change the old acces token of user in the user file
-    // call again getSpotifyUsername
-    // getSpotifyUsername(newAccessToken)
+    
+    return "ERROR : getSpotifyUsername";
+
   }) 
 }
 
 
-refreshSpotifyToken = async () => {
+// Display user's play song : Title, Artist name, Album title
+module.exports.getUserPlayingSongInfo = async (userSpotifyToken) => {
+  return axios.get('https://api.spotify.com/v1/me/playlists', {
+    headers : {
+      Authorization : "Bearer " + userSpotifyToken
+    }
+  })
+  .then(function (response) {
+    return response.data.items[0];
+  })
+  .catch(async function (error) {
+    return "ERROR : getUserPlayingSongInfo";
+  })
+}
+
+
+module.exports.getUserDeviceName = async (userSpotifyToken) => {
+  return axios.get('https://api.spotify.com/v1/me/player/devices', {
+    headers : {
+      Authorization : "Bearer " + userSpotifyToken
+    }
+  })
+  .then(function (response) {
+    return response.data.devices[0];
+  })
+  .catch(async function (error) {
+    return "ERROR : getUserDeviceName";
+  })
+}
+
+/*refreshSpotifyToken = async () => {
   var refresh_token = "AQAQEhZmvgEUwcJigUQHgHZ12RMBaMVyfsvPmUmUrg7auBNZsT-X-4kQL_pBXL-6xQZEYpUUf1R1h36Z8oYP8MVJigq8MPUbsRPPOb9TXRqvcb20b9guLBMRlCs96k0Zg-g";
     var authOptions = {
         url: 'https://accounts.spotify.com/api/token',
@@ -269,6 +297,6 @@ refreshSpotifyToken = async () => {
             return access_new_token
         }
 
-        console.log("acc new token" + access_new_token);
+        console.log("acc new token  ==>", access_new_token);
     });
-}
+}*/

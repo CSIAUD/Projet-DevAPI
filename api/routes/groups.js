@@ -5,7 +5,7 @@ const middleware = require('../controllers/middleware');
 
 router.get("/", groupController.listGroup); // DISPLAY ALL GROUPS
 
-router.get("/members", groupController.listMembersOfGroup); // DISPLAY ALL MEMBERS OF GROUP
+router.get("/members", middleware.verify, groupController.listMembersOfGroup); // DISPLAY ALL MEMBERS OF GROUP
 
 router.post("/", middleware.verify, groupController.joinGroup); // JOIN A GROUP 
 

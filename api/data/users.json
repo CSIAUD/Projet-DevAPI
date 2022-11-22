@@ -24,7 +24,7 @@
       "uid": "96addc17-e1ad-4200-8df6-d975f2ca6999",
       "username": "ikim2",
       "password": "$2b$10$urLjaWdh53lfmMvt.S3zgukBUGKiNZ0dIvwpqYKzcUhHgOCcuMiIq",
-      "group": "myGroup",
+      "group": "myGroup3",
       "link": {
         "access": "",
         "refresh": ""
@@ -37,7 +37,13 @@
       "chief": "ikim",
       "members": [
         "ikim",
-        "Cyp",
+        "Cyp"
+      ]
+    },
+    {
+      "name": "myGroup3",
+      "chief": "ikim2",
+      "members": [
         "ikim2"
       ]
     }

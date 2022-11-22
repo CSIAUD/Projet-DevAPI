@@ -82,24 +82,10 @@ module.exports.joinGroup = async (req, res) => {
     return res.status(200).json("User has joined the group " + groupName);
 }
 
-module.exports.listMembersOfGroup = async (req, res) => {    
+module.exports.listMembersOfGroup = async (req, res) => {
+    const uid = req.user.uid
 
-    // Get the Token
-    const auth = req.header('Authorization');
-
-    const token = auth.split(" ")[1];
-
-    var validToken;
-
-    // Check is the Token is correct one. 
-    try {
-        validToken = jwt.verify(token, process.env.JWT_SECRET);
-       
-    } catch (error) {
-        return res.status(401).json("ACCESS FORBIDDEN");
-    }
-
-    const currentUser = getUserByUid(validToken.uid);
+    const currentUser = getUserByUid(uid);
 
     var listAllMembers = [];
     
