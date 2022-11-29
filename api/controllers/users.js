@@ -64,3 +64,16 @@ const findOne = (username) => {
         throw 'Unable to search users list.'
     }
 }
+
+// Recherche d'un utilisateur existant :
+module.exports.findOneById = (uid) => {
+    try {
+        const file = require('../data/users.json');
+        const users = file.users;
+        const user = users.find(u => u.uid === uid);
+        return user;
+    } catch(err) {
+        console.log(err);
+        throw 'Unable to search users list.'
+    }
+}
