@@ -1,6 +1,11 @@
 const token = require('../controllers/spotify.js'); // Import du controller
 token.getToken
 
+const axios = require('axios');
+
+// Utilisateurs de l'API
+const file = '../api/data/users.json';
+
 
 // FT-8 Playlist | /me/top/{type}
 /*
@@ -12,29 +17,34 @@ token.getToken
 
 // Based on 'me' and 'tracks'
 module.exports.createPlaylistTracksFromMyself = async (req, res) => {
-    try {
 
-        // 'user' peut demander la création d’une playlist sur son compte Spotify contenant les 10 musiques préférées* d’un autre Utilisateur (qui peut être lui-même) passé en paramètre.
-        // Le 'user' passé en paramètre doit appartenir à notre projet (user connecté à Spotify)
-        // * : https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-top-artists-and-tracks
+    // 'user' peut demander la création d’une playlist sur son compte Spotify contenant les 10 musiques préférées* d’un autre Utilisateur (qui peut être lui-même) passé en paramètre.
+    // Le 'user' passé en paramètre doit appartenir à notre projet (user connecté à Spotify)
+    // * : https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-top-artists-and-tracks
 
-        // Récupération des données de l'URL
+    console.log("test playlist");
 
-        // Création d'une playlist avec les données récupérées
-        //"items": [ {} ],
-        console.log(req);
+    var authOptions = {
+        url: 'https://api.spotify.com/v1/me/top/tracks',
+        headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) }
+    };
 
-        playlist = [];
-        for (let i = 0; i < 10; i++) {
-            playlist += items[i];
-            // DEBUG
-            // console.log(playlist);
-        }
+    // Récupération des données de l'URL
+    // AXIOS :
+    axios.post(authOptions.url, authOptions.form, {
+        headers: authOptions.headers,
+        state: state
+    })
 
+    // Création d'une playlist avec les données récupérées
+    //"items": [ {} ],
+    console.log(req);
 
-    } catch (err) {
-        console.log(err)
-        return res.status(500).json(err);
+    playlist = [];
+    for (let i = 0; i < 10; i++) {
+        // playlist += items[i];
+        // DEBUG
+        // console.log(playlist);
     }
 }
 
