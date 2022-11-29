@@ -10,6 +10,8 @@ const axios = require('axios');
 
 var querystring = require('querystring');
 var request = require('request'); // "Request" library
+const { response } = require('express');
+const { Console } = require('console');
 const file = '../api/data/users.json';
 
 var client_id = process.env.CLIENT_ID;
@@ -249,14 +251,24 @@ module.exports.getSpotifyUsername = async (userSpotifyToken) => {
 
 // Display user's play song : Title, Artist name, Album title
 module.exports.getUserPlayingSongInfoAndDevice = async (userSpotifyToken) => {
-  return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
+  let currentPlaying = "https://api.spotify.com/v1/me/player/currently-playing"
+  let playStateBack = "https://api.spotify.com/v1/me/player"
+
+  const requestOne = axios.get(currentPlaying);
+  const requestTwo = axios.get(playStateBack);
+
+  return axios.all([requestOne, requestTwo], {
     headers : {
       Authorization : "Bearer " + userSpotifyToken
     }
   })
-  .then(function (response) {
-    return response.data;
-  })
+  .then(axios.spread((...responses) => {
+    const responseOne = responses[0]
+    const responseTwo = responses[1]
+
+    console.log(responseOne.data);
+    Console.log(responseTwo.data);
+  }))
   .catch(async function (error) {
     return "ERROR : getUserPlayingSongInfo";
   })
