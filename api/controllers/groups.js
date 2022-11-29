@@ -142,7 +142,8 @@ module.exports.listMembersOfGroup = async (req, res) => {
 
                     // GET SPOTIFY DEVICE NAME
                     const spotifyDevice = await spotify.getUserDeviceName(link.access);
-                    result.device = `${spotifyDevice.name} (${spotifyDevice.type})`;
+                    if(spotifyDevice.name && spotifyDevice.type)
+                        result.device = `${spotifyDevice.name} (${spotifyDevice.type})`;
 
                     // GET CURRENT MUSIC PLAYING
                     const userPlayingSong = await spotify.getUserPlayingSongInfo(link.access);
