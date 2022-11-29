@@ -1,12 +1,15 @@
-
 // const token = require('../controllers/spotify'); // Import du controller
 // token.getToken
 
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIzOGY1MGE3YS1jOTY3LTQyYTUtYjdiZS1jMTBlODU4OTliODIiLCJpYXQiOjE2NjkxMDc5MDgsImV4cCI6MTY2OTExMTUwOH0.URRf4diYEW33-3dxRcLVe9YtM48RBxqv_OxL3fzRdg8
+
 // 📚 Librairies
 const fs = require('fs');
-const { writeFile, readFile } = require('fs');
+const { writeFile, readFileSync } = require('fs');
 const axios = require('axios');
+const jwt = require("jsonwebtoken");
 
+const usersController = require('../controllers/users');
 
 var querystring = require('querystring');
 var request = require('request'); // "Request" library
@@ -18,11 +21,12 @@ var client_id = process.env.CLIENT_ID;
 var client_secret = process.env.CLIENT_SECRET;
 var redirect_uri = process.env.REDIRECT_URI;
 
+// Refresh du access_token de Spotify
 module.exports.refreshToken = (req, res) => {
     var refresh_token = req.query.refresh_token;
     var authOptions = {
         url: 'https://accounts.spotify.com/api/token',
-        headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
+        headers: { 'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) },
         form: {
             grant_type: 'refresh_token',
             refresh_token: refresh_token
@@ -34,42 +38,55 @@ module.exports.refreshToken = (req, res) => {
         if (!error && response.statusCode === 200) {
             var access_token = body.access_token;
             res.send({
-            'access_token': access_token
+              'access_token': access_token
             });
+            setAcessToken(access_token);
         }
     });
 }
 
+// Lien avec le compte Spotify
+// Header Authorization => Bearer + Token user
 module.exports.link = async (req, res) => {
-    // if (false) {
-    if (await isLinked(req.query.user)) {
-        res.send("Compte déjà lié à Spotify");
+    /*  
+        #swagger.summary = "Lier l'utilisateur à un compte Spotify (FT-3)"
+        #swagger.description = "Lie l'utilisateur à un compte Spotify auquel il doit se connecter. Renvoie l'URL de connexion à Spotify."
+        #swagger.responses[200] = { description: "Requête valide. Connectez-vous à Spotify." } 
+    */
+    const uid = req.user.uid;
+
+    getToken(uid)
+    
+    let linked = await isLinked(uid);
+    if (!linked) {
+        return res.status(400).json("Ce compte a déjà été lié à Spotify.");
     } else { 
-      
-        // your application requests authorization
-        var scope = 'user-read-private user-read-email user-read-playback-state';
-        res.redirect(
-            'https://accounts.spotify.com/authorize?' +
-            querystring.stringify(
-                {
-                    response_type: 'code',
-                    client_id: client_id,
-                    scope: scope,
-                    redirect_uri: redirect_uri,
-                    state: req.query.user
-                }
-            )
-        );
+      // your application requests authorization
+      const scope = 'user-read-private user-read-email user-read-playback-state';
+
+      const url = 'https://accounts.spotify.com/authorize?' +
+        querystring.stringify(
+            {
+            response_type: 'code',
+            client_id: client_id,
+            scope: scope,
+            redirect_uri: redirect_uri,
+            state: uid
+            }
+        )
+
+        res.status(200);
+        return res.send(`Suivez le lien suivant pour vous identifier à Spotify :\n\n${url} \n\n`);
     }
 }
 
+// Traitement de la connexion avec Spotify
 module.exports.callback = async (req, res) => {
   //  console.log(req.query);
    
    const code = req.query.code || null;
    const client_secret = process.env.CLIENT_SECRET
    const state = req.query.state || null;
-   console.log(state)
  
    if (state === null) {
      res.redirect('/#' +
@@ -89,146 +106,17 @@ module.exports.callback = async (req, res) => {
           'content-type': 'application/x-www-form-urlencoded'
         },
         json: true
-      };
-      // AXIOS :
-      axios.post(authOptions.url, authOptions.form, {
-          headers: authOptions.headers,
-          state: state
-      }).then(async response => { 
-         if(await setTokens(response)){
-           res.send("Compte lié");
-         }else{
-           res.send("Erreur");
-         }
+    };
+    // AXIOS :
+    axios.post(authOptions.url, authOptions.form, {headers: authOptions.headers, state: state})
+      .then(async response => { 
+          if(await setTokens(response)){
+            returnres.send("Votre compte a été lié à Spotify ✔️");
+          }else{
+            res.send("⚠️ Une erreur est survenue lors de la liaison à Spotify.");
+          }
       })
    }
-
-}
-
-setTokens = async (resp) => {
-  let data = resp.data;
-  const username = resp.config.state;
-  return readFile(file, (err, fileData) => {
-    if (err) {
-      console.log("Erreur Lecture User.", err);
-      return;
-    }
-    const parsedData = JSON.parse(fileData);
-    const users = parsedData.users;
-    let user = users.find(u => (u.username).toLowerCase() === (username).toLowerCase());
-    if(!user) return false;
-    const uIndex = parsedData.users.indexOf(user);
-
-    const links = {
-        access: data.access_token,
-        refresh: data.refresh_token
-    }
-    parsedData.users[uIndex].link = links;
-    console.log(parsedData.users[uIndex])
-    return writeFile(file, JSON.stringify(parsedData, null, 2), (err) => {
-      if (err) {
-        console.log("Une erreur est survenue lors de la mise à jour du fichier users.json.");
-        return false;
-      }
-      return true;
-    });
-  });
-}
-
-isLinked = async (username) => {
-  try {
-    return await readFile(file, (err, fileData) => {
-        const parsedData = JSON.parse(fileData);
-        let users = parsedData.users;
-
-        if(!users.length) return false;
-        // ==============================
-        const user = users.find(u => (u.username).toLowerCase() === (username).toLowerCase());
-        if(!user.link) return false;
-        // ==============================
-        if(user.link.length != 2){
-            let index = users.indexOf(user);
-            delete parsedData.users[index].link
-
-            writeFile(file, JSON.stringify(parsedData, null, 2), (err) => {
-                if (err) {
-                    console.log("Une erreur est survenue lors de la mise à jour du fichier users.json.");
-                    return;
-                }
-                console.log("Le lien a été supprimé");
-            });
-
-            return false;
-        } 
-        // ==============================
-        if(user.link.access == "" || user.link.refresh == ""){
-            let index = users.indexOf(user);
-            delete parsedData.users[index].link
-
-            writeFile(file, JSON.stringify(parsedData, null, 2), (err) => {
-                if (err) {
-                    console.log("Une erreur est survenue lors de la mise à jour du fichier users.json.");
-                    return;
-                }
-                console.log("Le lien a été supprimé");
-            });
-
-            return false;
-        }
-        // ==============================
-        return true;
-    })
-  } catch(err) {
-      console.log(err);
-      throw 'Unable to search users list.'
-  }
-}
-
-getToken = async (username) => {
-  try {
-    return await readFile(file, (err, fileData) => {
-        const parsedData = JSON.parse(fileData);
-        let users = parsedData.users;
-
-        if(!users.length) return [null, 'No User'];
-        // ==============================
-        const user = users.find(u => (u.username).toLowerCase() === (username).toLowerCase());
-        if(!user.link) return [null, 'Not linked'];
-        // ==============================
-        if(user.link.length != 2){
-            let index = users.indexOf(user);
-            delete parsedData.users[index].link
-
-            writeFile(file, JSON.stringify(parsedData, null, 2), (err) => {
-              if (err) {
-                console.log("Une erreur est survenue lors de la mise à jour du fichier users.json.");
-                return;
-              }
-            });
-
-            return [null, 'Not linked'];
-        } 
-        // ==============================
-        if(user.link.access == "" || user.link.refresh == ""){
-            let index = users.indexOf(user);
-            delete parsedData.users[index].link
-
-            writeFile(file, JSON.stringify(parsedData, null, 2), (err) => {
-              if (err) {
-                console.log("Une erreur est survenue lors de la mise à jour du fichier users.json.");
-                return;
-              }
-            });
-
-            return [null, 'Not linked'];
-        }
-        // ==============================
-        return [user.link.access, null];
-    })
-  } catch(err) {
-      console.log(err);
-      throw 'Unable to search users list.'
-  }
 }
 
 // Display user nickname from spotify
@@ -251,26 +139,22 @@ module.exports.getSpotifyUsername = async (userSpotifyToken) => {
 
 // Display user's play song : Title, Artist name, Album title
 module.exports.getUserPlayingSongInfoAndDevice = async (userSpotifyToken) => {
-  let currentPlaying = "https://api.spotify.com/v1/me/player/currently-playing"
-  let playStateBack = "https://api.spotify.com/v1/me/player"
-
-  const requestOne = axios.get(currentPlaying);
-  const requestTwo = axios.get(playStateBack);
-
-  return axios.all([requestOne, requestTwo], {
+  return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
     headers : {
       Authorization : "Bearer " + userSpotifyToken
     }
   })
-  .then(axios.spread((...responses) => {
-    const responseOne = responses[0]
-    const responseTwo = responses[1]
+  .then(function (response) {
+    return axios.get('https://api.spotify.com/v1/me/player', {
+      headers : {
+        Authorization : "Bearer " + userSpotifyToken
+      }
+      
 
-    console.log(responseOne.data);
-    Console.log(responseTwo.data);
-  }))
+    })
+  })
   .catch(async function (error) {
-    return "ERROR : getUserPlayingSongInfo";
+    return "ERROR : getUserPlayingSongInfoAndDevice";
   })
 }
 
@@ -288,6 +172,180 @@ module.exports.getUserDeviceName = async (userSpotifyToken) => {
     return "ERROR : getUserDeviceName";
   })
 }
+
+// Enregistremment des Acess_token et Refresh_token dans users.json
+setTokens = async (resp) => {
+  let data = resp.data;
+  let uid = resp.config.state;
+  try{
+    const fileContent = readFileSync(file);
+    let parsedData = JSON.parse(fileContent.toString());
+    let users = parsedData.users;
+    let user = users.find(u => u.uid === uid);
+
+    if(!user) return false;
+    let uIndex = users.indexOf(user);
+
+    let links = {
+        access: data.access_token,
+        refresh: data.refresh_token
+    }
+    parsedData.users[uIndex].link = links;
+
+    try{
+      let toWrite = JSON.stringify(parsedData, null, 2)
+      writeFile(file, toWrite, err => {
+        if (err) {
+          console.error(err);
+        }
+      });
+      return true;
+    } catch(err){
+      console.error("Une erreur est survenue lors de la mise à jour du fichier users.json.");
+      return false;
+    }
+  }catch(err){
+      console.error("Erreur Lecture User.", err);
+  }
+}
+// Enregistremment des Acess_token et Refresh_token dans users.json
+setAcessToken = async (uid, token) => {
+  try{
+    const fileContent = readFileSync(file);
+    let parsedData = JSON.parse(fileContent.toString());
+    let users = parsedData.users;
+    let user = users.find(u => u.uid === uid);
+
+    if(!user) return false;
+    let uIndex = users.indexOf(user);
+
+    let links = {
+        access: token,
+        refresh: user.link.refresh
+    }
+    parsedData.users[uIndex].link = links;
+
+    try{
+      let toWrite = JSON.stringify(parsedData, null, 2)
+      writeFile(file, toWrite, err => {
+        if (err) {
+          console.error(err);
+        }
+      });
+      return true;
+    } catch(err){
+      console.error("Une erreur est survenue lors de la mise à jour du fichier users.json.");
+      return false;
+    }
+  }catch(err){
+      console.error("Erreur Lecture User.", err);
+  }
+}
+
+// Vérification du lien avec Spotify basé sur users.json
+isLinked = async (uid) => {
+  try {
+    const fileContent = readFileSync(file);
+    const users = JSON.parse(fileContent.toString()).users;
+
+    if(!users.length) return false;
+    // ==============================
+    const user = users.find(u => u.uid === uid);
+    if(!user.link) return false;
+    // ==============================
+    if(user.link.access == "" || user.link.refresh == ""){
+        let index = users.indexOf(user);
+        delete parsedData.users[index].link
+
+        writeFile(file, JSON.stringify(parsedData, null, 2), (err) => {
+            if (err) {
+                console.log("Une erreur est survenue lors de la mise à jour du fichier users.json.");
+                return;
+            }
+            console.log("Le lien a été supprimé");
+        });
+        return false;
+    } 
+    // ==============================
+    if(user.link.access == "" || user.link.refresh == ""){
+        let index = users.indexOf(user);
+        delete parsedData.users[index].link
+
+        writeFile(file, JSON.stringify(parsedData, null, 2), (err) => {
+            if (err) {
+                console.log("Une erreur est survenue lors de la mise à jour du fichier users.json.");
+                return;
+            }
+            console.log("Le lien a été supprimé");
+        });
+        return false;
+    }
+    // ==============================
+    return true;
+  } catch(err) {
+      console.log('error');
+      console.log(err);
+  } 
+}
+
+// Récupération d'un access_token valide de Spotify
+getToken = async (uid) => {
+  let user = usersController.findOneById(uid)
+  try {
+    if(await isLinked(uid)){
+      let access = user.link.access
+      let refresh = user.link.refresh
+
+      const authOptions = {
+        url: 'https://api.spotify.com/v1/me',
+        headers: {
+          'Authorization': 'Bearer ' + access
+        }
+      };
+        
+      return axios.get(authOptions.url, {
+        headers: authOptions.headers
+      })
+      .then((resp) => { 
+        return access;
+      })
+      .catch((err) => {
+        err = err.response.data.error;
+        if(err.status == 401){
+          console.log("== invalid token ==========\n");
+
+          var refresh_token = refresh;
+          var authOptions = {
+              url: 'https://accounts.spotify.com/api/token',
+              headers: { 'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) },
+              form: {
+                  grant_type: 'refresh_token',
+                  refresh_token: refresh_token
+              },
+              json: true
+          };
+        
+          request.post(authOptions, function(error, response, body) {
+              if (!error && response.statusCode === 200) {
+                  var access_token = body.access_token;
+                  setAcessToken(uid, access_token);
+                  return access_token;
+              }else{
+                console.log(error)
+                console.log(response)
+              }
+          });
+        }
+      })
+
+    }
+  } catch(err) {
+    
+    // console.log(err.response);
+  }
+}
+
+
 
 /*refreshSpotifyToken = async () => {
   var refresh_token = "AQAQEhZmvgEUwcJigUQHgHZ12RMBaMVyfsvPmUmUrg7auBNZsT-X-4kQL_pBXL-6xQZEYpUUf1R1h36Z8oYP8MVJigq8MPUbsRPPOb9TXRqvcb20b9guLBMRlCs96k0Zg-g";

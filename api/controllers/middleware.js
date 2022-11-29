@@ -13,6 +13,13 @@
 const jwt = require("jsonwebtoken");
 
 verify = (req, res, next) => {
+    /* 
+        #swagger.security = [{
+            "bearerAuth": []
+        }] 
+        #swagger.responses[401] = { description: "Vous n'êtes pas authentifié(e)." } 
+        #swagger.responses[403] = { description: "Le token est invalide." } 
+    */
     const authHeader = req.headers.authorization;
 
     // ❌ No 'Authorization' header :

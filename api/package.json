@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js --ignore swagger.json --ignore ./doc/users.json",
+    "swagger-autogen": "node ./doc/swagger-autogen.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,9 @@
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.20",
     "request": "^2.88.2",
+    "swagger-autogen": "^2.22.0",
+    "swagger-jsdoc": "^6.2.5",
+    "swagger-ui-express": "^4.6.0",
     "uuidv4": "^6.2.13"
   }
 }

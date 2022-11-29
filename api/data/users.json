@@ -1,45 +1,49 @@
 {
-  "users": [
-    {
-      "uid": "2531a324-257a-4a19-8802-f3620bf8bbf2",
-      "username": "Cyp",
-      "password": "$2b$10$qodHI9VGMGC2sncgjyaCl.OuCKLJ.ouR0ApbsU2f.rjLI74aqYxyq",
-      "link": {
-        "access": "BQDY2M2NHGprI1uQxGc9ZviMVcBx-VhEl-2QOEZjwtLyfi5pBl7A9ColVvwp9sD2ZuJpQ1bqGM_Z9-d6e87gCsGccuZ4FXaj2XezUl3IHrYNOUN2fO1FlbRXNu4eHhdZEt_8LL-60gYbMz5OnWOdLzFlETkuIl8G6wSdtCMEBwkLWoZO5G7eNz3tFBTxuf0i2zMjZyeTqKDEn7HstC8yd31mVzG8ZQ",
-        "refresh": "AQAQEhZmvgEUwcJigUQHgHZ12RMBaMVyfsvPmUmUrg7auBNZsT-X-4kQL_pBXL-6xQZEYpUUf1R1h36Z8oYP8MVJigq8MPUbsRPPOb9TXRqvcb20b9guLBMRlCs96k0Zg-g"
-      },
-      "group": "myGroup"
-    },
-    {
-      "uid": "f5a3039f-d7fe-4a5a-9c52-3db59bd37a51",
-      "username": "ikim",
-      "password": "$2b$10$/2moxlppymTEClO2Zi3V2.iQAP7RpAm7ve8Mw9IozJjHObsxUvCUC",
-      "group": "myGroup",
-      "link": {
-        "access": "",
-        "refresh": ""
-      }
-    },
-    {
-      "uid": "96addc17-e1ad-4200-8df6-d975f2ca6999",
-      "username": "ikim2",
-      "password": "$2b$10$urLjaWdh53lfmMvt.S3zgukBUGKiNZ0dIvwpqYKzcUhHgOCcuMiIq",
-      "group": "myGroup",
-      "link": {
-        "access": "",
-        "refresh": ""
-      }
-    }
-  ],
-  "groups": [
-    {
-      "name": "myGroup",
-      "chief": "ikim",
-      "members": [
-        "ikim",
-        "Cyp",
-        "ikim2"
-      ]
-    }
-  ]
+    "users": [
+        {
+            "uid": "d29183fc-d82e-41b6-8b6a-4251a1dc432d",
+            "username": "Nicolas",
+            "password": "$2b$10$uxE3LlEhiG8dOI616Dq1xOuOSUa7xp1IKXgdE/61pwD3Bs3yDClvO",
+            "group": "MonGroupe"
+        },
+        {
+            "uid": "143a56c6-c4c9-4d77-9e15-d58cbfaf3007",
+            "username": "Injin",
+            "password": "$2b$10$yNYjIhex8K13f90uPmPYSeVi56FnFYpnb8DvddCezW80c/ljxsu82",
+            "group": "Mon Super Groupe"
+        },
+        {
+            "uid": "38f50a7a-c967-42a5-b7be-c10e85899b82",
+            "username": "Cyp",
+            "password": "$2b$10$EUQ6qvE3sRd8tTFBuK8MXutbz.hnu0AT7rPkuc6ifk8Nld4Q0eicq",
+            "link": {
+                "access": "BQCblC6eomq_JYDKTI9f--nj4vNQsKDbRDass1WydBBmz8UdQ5-VI1-ctvTHxuiXszX5WG-1OC53ACOwCO-s6vNxD4X_7M6cqeUWk07Be0SANgJMU74zOc84_tuewWnsNOOXWwwtsXSJeiTDFlgKOcA7Gblscj0WR7A9vX2E8BYlfeB2oumwHgXssxHF0mYgrAtV7u051hQHXqoaljS6EMJp7z8Olro",
+                "refresh": "AQAPjd3_c80a8qingswyCIgNsJ9v7YGoLFVId6p2HYCinPQuykCAvFmjnVw5gg4xyklZKE7wXEzNFuZsgnJWZeB9hAruStl3Yievs09h_0iK-M1ycgGKXfhj4YWDGleLFIs"
+            },
+            "group": "CypG"
+        }
+    ],
+    "groups": [
+        {
+            "name": "MonGroupe",
+            "chief": "Nicolas",
+            "members": [
+                "Nicolas"
+            ]
+        },
+        {
+            "name": "Mon Super Groupe",
+            "chief": "Injin",
+            "members": [
+                "Injin"
+            ]
+        },
+        {
+            "name": "CypG",
+            "chief": "Cyp",
+            "members": [
+                "Cyp"
+            ]
+        }
+    ]
 }
