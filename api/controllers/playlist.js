@@ -3,6 +3,10 @@ token.getToken
 
 const axios = require('axios');
 
+var client_id = process.env.CLIENT_ID;
+var client_secret = process.env.CLIENT_SECRET;
+var redirect_uri = process.env.REDIRECT_URI;
+
 // Utilisateurs de l'API
 const file = '../api/data/users.json';
 
@@ -22,19 +26,24 @@ module.exports.createPlaylistTracksFromMyself = async (req, res) => {
     // Le 'user' passé en paramètre doit appartenir à notre projet (user connecté à Spotify)
     // * : https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-top-artists-and-tracks
 
-    console.log("test playlist");
-
-    var authOptions = {
-        url: 'https://api.spotify.com/v1/me/top/tracks',
-        headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) }
+    var options = {
+        // url: 'https://api.spotify.com/v1/me/top/tracks',
+        headers: { 'Authorization' : 'Bearer ' + token }
     };
 
     // Récupération des données de l'URL
     // AXIOS :
-    axios.post(authOptions.url, authOptions.form, {
-        headers: authOptions.headers,
-        state: state
+    axios.get('https://api.spotify.com/v1/me/top/tracks', options)
+      .then(function (response) {
+        console.log(response.data);
+        return response;
     })
+    .catch(function (error) {
+        console.log(error);
+    })
+    .finally(function () {
+        // always executed
+    });
 
     // Création d'une playlist avec les données récupérées
     //"items": [ {} ],
@@ -43,57 +52,6 @@ module.exports.createPlaylistTracksFromMyself = async (req, res) => {
     playlist = [];
     for (let i = 0; i < 10; i++) {
         // playlist += items[i];
-        // DEBUG
-        // console.log(playlist);
-    }
-}
-
-// Based on 'me' and 'artists'
-module.exports.createPlaylistArtistsFromMyself = async (req, res) => {
-
-    // Récupération des données de l'URL
-
-    // Création d'une playlist avec les données récupérées
-    //"items": [ {} ],
-    console.log(req);
-
-    playlist = [];
-    for (let i = 0; i < 10; i++) {
-        playlist += items[i];
-        // DEBUG
-        // console.log(playlist);
-    }
-}
-
-// Based on 'someone' and 'tracks'
-module.exports.createPlaylistTracksFromSomeone = async (req, res) => {
-
-    // Récupération des données de l'URL
-
-    // Création d'une playlist avec les données récupérées
-    //"items": [ {} ],
-    console.log(req);
-
-    playlist = [];
-    for (let i = 0; i < 10; i++) {
-        playlist += items[i];
-        // DEBUG
-        // console.log(playlist);
-    }
-}
-
-// Based on 'someone' and 'artists'
-module.exports.createPlaylistArtistsFromSomeone = async (req, res) => {
-
-    // Récupération des données de l'URL
-
-    // Création d'une playlist avec les données récupérées
-    //"items": [ {} ],
-    console.log(req);
-
-    playlist = [];
-    for (let i = 0; i < 10; i++) {
-        playlist += items[i];
         // DEBUG
         // console.log(playlist);
     }

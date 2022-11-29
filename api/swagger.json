@@ -1,0 +1,293 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0",
+    "title": "YSpotify REST API",
+    "description": "\n⭐ Équipe :\n\n    • Injin Kim\n\n    • Nicolas Lépinay\n\n    • Matéo Palmieri\n\n    • Cyprien Siaud\n\n\n\n\n⭐ Fonctionnalités :\n\n    • FT-1 : Inscription\n\n    • FT-2 : Connexion\n\n    • FT-3 : Liaison du compte Spotify\n\n    • FT-4 : Rejoindre un groupe\n\n    • FT-5 : Consultation des groupes et des utilisateurs\n\n    • FT-6 : Personnalité de l'utilisateur\n\n    • FT-7 : Synchronisation\n\n    • FT-8 : Playlist\n\n"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "",
+      "description": ""
+    }
+  ],
+  "securityDefinitions": {},
+  "paths": {
+    "/api/token/": {
+      "get": {
+        "summary": "Connecter un utilisateur (FT-2)",
+        "description": "Génère un JSON Web Token pour l'authentification.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token généré avec succès."
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Ce compte n'existe pas."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/api/users/": {
+      "post": {
+        "summary": "Inscrire un utilisateur (FT-1)",
+        "description": "Crée un utilisateur dans la base de données.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Inscription réussie."
+          },
+          "400": {
+            "description": "Aucun identifiant n'a été saisi."
+          },
+          "422": {
+            "description": "Ce nom d'utilisateur n'est pas disponible."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "example": "any"
+                  },
+                  "password": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/groups/": {
+      "get": {
+        "summary": "Afficher les groupes (FT-5)",
+        "description": "Affiche la liste des groupes existants et leur taille.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Vous n'êtes pas authentifié(e)."
+          },
+          "403": {
+            "description": "Le token est invalide."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Rejoindre un groupe (FT-4)",
+        "description": "Rejoindre un groupe.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Vous n'êtes pas authentifié(e)."
+          },
+          "403": {
+            "description": "Le token est invalide."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "groupName": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/groups/members": {
+      "get": {
+        "summary": "Afficher les détails de son groupe (FT-5 bis)",
+        "description": "Affiche le détail de membres du groupe auquel l'utilisateur appartient.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Vous n'êtes pas authentifié(e)."
+          },
+          "403": {
+            "description": "Vous n'appartenez à aucun groupe."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/spotify/refresh_token": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "refresh_token",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/spotify/callback": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/spotify/link": {
+      "get": {
+        "summary": "Lier l'utilisateur à un compte Spotify (FT-3)",
+        "description": "Lie l'utilisateur à un compte Spotify auquel il doit se connecter. Renvoie l'URL de connexion à Spotify.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Requête valide. Connectez-vous à Spotify."
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Vous n'êtes pas authentifié(e)."
+          },
+          "403": {
+            "description": "Le token est invalide."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

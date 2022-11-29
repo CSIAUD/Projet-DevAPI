@@ -1,59 +1,44 @@
 // 📚 Librairies
 const express = require('express');
+const request = require('request');
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('./swagger.json');
+
 require('dotenv').config();
-var request = require('request'); // "Request" library  
-var http = require('http');
 
 // 🚗 Routes
 const authRoute = require("./routes/auth");
 const usersRoute = require("./routes/users");
+const groupsRoute = require("./routes/groups");   
 const spotifyRoute = require("./routes/spotify");
-const playlistRoute = require("./routes/playlist");
-const synchronisationRoute = require("./routes/synchronisation");
 
-let app = express();
+// ➡️ Module imports :
+const swagger = require("./doc/swagger-autogen.js");
 
-app.use(express.json()); // Body parser for POST requests
+// ⛰️ Environment variables :
+const port = process.env.PORT || 8080;
+const client_id = process.env.CLIENT_ID;
+const client_secret = process.env.CLIENT_SECRET;
+const redirect_uri = process.env.REDIRECT_URI;
 
-var port = process.env.PORT;
+const app = express();
 
-// =====================================
-// ➡️ ENDPOINT : http://localhost:8080/api/users
-// ▶️ METHOD : [POST]
-// 💡 USAGE : Inscrire un utilisateur
-// ❔ Parameters :
+// Body parser for POST requests
+app.use(express.json());
 
-// body: {
-//   "username": "string",
-//   "password": "string"
-// }
-app.use("/api/users", usersRoute);
-
-// =====================================
-// ➡️ ENDPOINT : http://localhost:8080/api/token
-// ▶️ METHOD : [GET]
-// 💡 USAGE : Connecter un utilisateur
-// ❔ Paramaters :
-// Auth Basic : username;password
+// =====> API Routes
 app.use("/api/token", authRoute);
+app.use("/api/users", usersRoute);
+app.use("/api/groups", groupsRoute);
 
-// ===== API Spotify =====
+// =====> API Spotify
 app.use('/api/spotify', spotifyRoute);
 
-// =====================================
-// ➡️ ENDPOINT : http://localhost:8080/api/me/top/{type}
-// ▶️ METHOD : []
-// 💡 USAGE : Créer une playlist
-// ❔ Parameters :
-app.use('/api/playlist', playlistRoute);
+// =====> Swagger Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile, { swaggerOptions: { persistAuthorization: true } }));
 
-// =====================================
-// ➡️ ENDPOINT : http://localhost:8080/api/me/top/{type}
-// ▶️ METHOD : []
-// 💡 USAGE : Synchroniser une musique
-// ❔ Parameters :
-app.use('/api/synchronisation', synchronisationRoute);
+swagger.Run();
 
 app.listen(port, () =>  {
-    console.log('le serveur fonctionne sur le port ' + port)
-})
+    console.log(`Le serveur fonctionne sur le port ${port}...`);
+});
