@@ -5,6 +5,8 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('./swagger.json');
 
 require('dotenv').config();
+var request = require('request'); // "Request" library  
+var http = require('http');
 
 // 🚗 Routes
 const authRoute = require("./routes/auth");
@@ -20,7 +22,6 @@ const port = process.env.PORT || 8080;
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
 const redirect_uri = process.env.REDIRECT_URI;
-
 const app = express();
 
 // Body parser for POST requests
