@@ -47,7 +47,6 @@ module.exports.refreshToken = (req, res) => {
 // Lien avec le compte Spotify
 // Header Authorization => Bearer + Token user
 module.exports.link = async (req, res) => {
-    console.log(getToken("38f50a7a-c967-42a5-b7be-c10e85899b82"));
     let uid;
     let tab = (req.headers.authorization).split(' ');
     if(tab[0] == "Bearer") {
@@ -163,10 +162,8 @@ setTokens = async (resp) => {
 }
 // Enregistremment des Acess_token et Refresh_token dans users.json
 setAcessToken = async (uid, token) => {
-  console.log("== setAccessToken ==========\n");
   try{
     const fileContent = readFileSync(file);
-    console.log(fileContent)
     let parsedData = JSON.parse(fileContent.toString());
     let users = parsedData.users;
     let user = users.find(u => u.uid === uid);
@@ -245,8 +242,6 @@ isLinked = async (uid) => {
 
 // Récupération d'un access_token valide de Spotify
 getToken = async (uid) => {
-  console.log("== getToken =====")
-  
   let user = usersController.findOneById(uid)
   try {
     if(await isLinked(uid)){
@@ -260,25 +255,18 @@ getToken = async (uid) => {
         }
       };
         
-      axios.get(authOptions.url, {
+      return axios.get(authOptions.url, {
         headers: authOptions.headers
       })
       .then((resp) => { 
         return access;
       })
       .catch((err) => {
-        console.log("== NOPE ==========\n");
         err = err.response.data.error;
         if(err.status == 401){
           console.log("== invalid token ==========\n");
-          const fileContent = readFileSync(file);
-          let parsedData = JSON.parse(fileContent.toString());
-          let users = parsedData.users;
-          let user = users.find(u => u.uid === uid);
 
-          if(!user) return false;
-
-          var refresh_token = user.link.refresh;
+          var refresh_token = refresh;
           var authOptions = {
               url: 'https://accounts.spotify.com/api/token',
               headers: { 'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) },
@@ -290,14 +278,11 @@ getToken = async (uid) => {
           };
         
           request.post(authOptions, function(error, response, body) {
-            console.log("== REQUEST ==========\n");
               if (!error && response.statusCode === 200) {
-                  console.log("== NO ERROR ==========\n");
                   var access_token = body.access_token;
-
                   setAcessToken(uid, access_token);
+                  return access_token;
               }else{
-                console.log("== ERROR ==========\n");
                 console.log(error)
                 console.log(response)
               }
