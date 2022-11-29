@@ -20,6 +20,11 @@
         "access": "BQCblC6eomq_JYDKTI9f--nj4vNQsKDbRDass1WydBBmz8UdQ5-VI1-ctvTHxuiXszX5WG-1OC53ACOwCO-s6vNxD4X_7M6cqeUWk07Be0SANgJMU74zOc84_tuewWnsNOOXWwwtsXSJeiTDFlgKOcA7Gblscj0WR7A9vX2E8BYlfeB2oumwHgXssxHF0mYgrAtV7u051hQHXqoaljS6EMJp7z8Olro",
         "refresh": "AQAPjd3_c80a8qingswyCIgNsJ9v7YGoLFVId6p2HYCinPQuykCAvFmjnVw5gg4xyklZKE7wXEzNFuZsgnJWZeB9hAruStl3Yievs09h_0iK-M1ycgGKXfhj4YWDGleLFIs"
       }
+    },
+    {
+      "uid": "1bf11ac6-f108-4833-ab51-db59b3cc43a9",
+      "username": "test",
+      "password": "$2b$10$wuUNdhNRoCZN2QP78tI27e0MDjT3y5ntiT5mnWDjqYz3GINjmOO4C"
     }
   ],
   "groups": [
