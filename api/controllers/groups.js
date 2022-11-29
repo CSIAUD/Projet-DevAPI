@@ -113,6 +113,7 @@ module.exports.listMembersOfGroup = async (req, res) => {
                 userGroup = g;
             }
         })
+        console.log(userGroup);
 
         for (let index = 0; index < userGroup.members.length; index++) {
             var mName = userGroup.members[index];
@@ -146,6 +147,8 @@ module.exports.listMembersOfGroup = async (req, res) => {
             }
 
             listAllMembers.push(result);
+
+            const finalResult = ""
         };
         return res.status(200).json(listAllMembers);
     }
