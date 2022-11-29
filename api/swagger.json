@@ -198,6 +198,13 @@
         ]
       }
     },
+    "/api/playlist/me/top/tracks": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {}
+      }
+    },
     "/api/spotify/refresh_token": {
       "get": {
         "description": "",

@@ -5,7 +5,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('./swagger.json');
 
 require('dotenv').config();
-var request = require('request'); // "Request" library  
+// var request = require('request'); // "Request" library  
 var http = require('http');
 
 // 🚗 Routes
@@ -13,6 +13,7 @@ const authRoute = require("./routes/auth");
 const usersRoute = require("./routes/users");
 const groupsRoute = require("./routes/groups");   
 const spotifyRoute = require("./routes/spotify");
+const playlistRoute = require("./routes/playlist");
 
 // ➡️ Module imports :
 const swagger = require("./doc/swagger-autogen.js");
@@ -31,6 +32,7 @@ app.use(express.json());
 app.use("/api/token", authRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/groups", groupsRoute);
+app.use("/api/playlist", playlistRoute);
 
 // =====> API Spotify
 app.use('/api/spotify', spotifyRoute);
