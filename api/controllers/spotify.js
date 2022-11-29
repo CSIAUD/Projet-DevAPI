@@ -56,7 +56,7 @@ module.exports.link = async (req, res) => {
     getToken(uid)
     
     let linked = await isLinked(uid);
-    if (!linked) {
+    if (linked) {
         return res.status(400).json("Ce compte a déjà été lié à Spotify.");
     } else { 
       // your application requests authorization
