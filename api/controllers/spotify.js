@@ -58,7 +58,7 @@ module.exports.link = async (req, res) => {
     getToken(uid)
     
     let linked = await isLinked(uid);
-    if (!linked) {
+    if (linked) {
         return res.status(400).json("Ce compte a déjà été lié à Spotify.");
     } else { 
       // your application requests authorization
@@ -121,56 +121,105 @@ module.exports.callback = async (req, res) => {
 
 // Display user nickname from spotify
 module.exports.getSpotifyUsername = async (userSpotifyToken) => {
-  return axios.get('https://api.spotify.com/v1/me/', {
-    headers : {
-      Authorization : "Bearer " + userSpotifyToken
-    }
-  })
-  .then(function (response) {    
-    return response.data.display_name;
-  })
-  .catch(async function (error) {
-    
-    return "ERROR : getSpotifyUsername";
-
-  }) 
-}
-
-
-// Display user's play song : Title, Artist name, Album title
-module.exports.getUserPlayingSongInfoAndDevice = async (userSpotifyToken) => {
-  return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
-    headers : {
-      Authorization : "Bearer " + userSpotifyToken
-    }
-  })
-  .then(function (response) {
-    return axios.get('https://api.spotify.com/v1/me/player', {
+    return axios.get('https://api.spotify.com/v1/me/', {
       headers : {
         Authorization : "Bearer " + userSpotifyToken
       }
-      
-
     })
-  })
-  .catch(async function (error) {
-    return "ERROR : getUserPlayingSongInfoAndDevice";
-  })
+    .then(function (response) {    
+      return response.data.display_name;
+    })
+    .catch(async function (error) {
+      return "ERROR : getSpotifyUsername";
+    }) 
+  }
+  
+  
+// Display user's play song : Title, Artist name, Album title
+module.exports.getUserPlayingSongInfo = async (userSpotifyToken) => {
+return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
+    headers : {
+    Authorization : "Bearer " + userSpotifyToken
+    }
+})
+.then(function (response) {
+    return response.data;
+})
+.catch(async function (error) {
+    return "ERROR : getUserPlayingSongInfo";
+})
+}
+  
+  
+module.exports.getUserDeviceName = async (userSpotifyToken) => {
+return axios.get('https://api.spotify.com/v1/me/player/devices', {
+    headers : {
+    Authorization : "Bearer " + userSpotifyToken
+    }
+})
+.then(function (response) {
+    return response.data.devices[0];
+})
+.catch(async function (error) {
+    return "ERROR : getUserDeviceName";
+})
 }
 
+// Récupération d'un access_token valide de Spotify
+module.exports. getToken = async (uid) => {
+    let user = usersController.findOneById(uid)
+    try {
+    if(await isLinked(uid)){
+        let access = user.link.access
+        let refresh = user.link.refresh
 
-module.exports.getUserDeviceName = async (userSpotifyToken) => {
-  return axios.get('https://api.spotify.com/v1/me/player/devices', {
-    headers : {
-      Authorization : "Bearer " + userSpotifyToken
+        const authOptions = {
+        url: 'https://api.spotify.com/v1/me',
+        headers: {
+            'Authorization': 'Bearer ' + access
+        }
+        };
+        
+        return axios.get(authOptions.url, {
+        headers: authOptions.headers
+        })
+        .then((resp) => { 
+        return access;
+        })
+        .catch((err) => {
+        err = err.response.data.error;
+        if(err.status == 401){
+            console.log("== invalid token ==========\n");
+
+            var refresh_token = refresh;
+            var authOptions = {
+                url: 'https://accounts.spotify.com/api/token',
+                headers: { 'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) },
+                form: {
+                    grant_type: 'refresh_token',
+                    refresh_token: refresh_token
+                },
+                json: true
+            };
+        
+            request.post(authOptions, function(error, response, body) {
+                if (!error && response.statusCode === 200) {
+                    var access_token = body.access_token;
+                    setAcessToken(uid, access_token);
+                    return access_token;
+                }else{
+                console.log(error)
+                console.log(response)
+                }
+            });
+        }
+        })
+
     }
-  })
-  .then(function (response) {
-    return response.data.devices[0];
-  })
-  .catch(async function (error) {
-    return "ERROR : getUserDeviceName";
-  })
+    } catch(err) {
+    
+    // console.log(err.response);
+    }
 }
 
 // Enregistremment des Acess_token et Refresh_token dans users.json
@@ -344,29 +393,3 @@ getToken = async (uid) => {
     // console.log(err.response);
   }
 }
-
-
-
-/*refreshSpotifyToken = async () => {
-  var refresh_token = "AQAQEhZmvgEUwcJigUQHgHZ12RMBaMVyfsvPmUmUrg7auBNZsT-X-4kQL_pBXL-6xQZEYpUUf1R1h36Z8oYP8MVJigq8MPUbsRPPOb9TXRqvcb20b9guLBMRlCs96k0Zg-g";
-    var authOptions = {
-        url: 'https://accounts.spotify.com/api/token',
-        headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
-        form: {
-            grant_type: 'refresh_token',
-            refresh_token: refresh_token
-        },
-        json: true
-    };
-  
-    
-    request.post(authOptions, function(error, response, body) {
-        if (!error && response.statusCode === 200) {            
-            var access_new_token = body.access_token;
-            
-            return access_new_token
-        }
-
-        console.log("acc new token  ==>", access_new_token);
-    });
-}*/
