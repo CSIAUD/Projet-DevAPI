@@ -2,9 +2,12 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 module.exports.getToken = async (req, res) => {
-    /* #swagger.security = [{
-        "basicAuth": []
-        }] 
+    /* 
+        #swagger.summary = 'Connecter un utilisateur (FT-2)'
+        #swagger.description = "Génère un JSON Web Token pour l'authentification."
+        #swagger.security = [{
+            "basicAuth": []
+            }] 
 
         #swagger.responses[200] = { description: "Token généré avec succès." } 
         #swagger.responses[404] = { description: "Ce compte n'existe pas." } 

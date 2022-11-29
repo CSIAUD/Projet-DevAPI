@@ -4,17 +4,22 @@ const spotify = require('./spotify');
 
 // DISPLAY ALL GROUPS' NAME AND SIZE
 module.exports.listGroup = async (req, res) => {
-
+    /* 
+        #swagger.summary = 'Afficher les groupes (FT-5)'
+        #swagger.description = "Affiche la liste des groupes existants et leur taille."
+    */
     const file = require('../data/users.json');
 
     var listGroups = [];
 
     const groups = file.groups;
 
+    const user = getUserByUid(req.user.uid);
+
     groups.forEach(group => {
         var groupInfo = {
-            groupName : group.name,
-            numberOfMembers : group?.members
+            group_name : group.name,
+            number_of_members : group?.members.length,
         }
 
         listGroups.push(groupInfo);
@@ -26,17 +31,21 @@ module.exports.listGroup = async (req, res) => {
 
 // Join a group
 module.exports.joinGroup = async (req, res) => {
+    /* 
+        #swagger.summary = 'Rejoindre un groupe (FT-4)'
+        #swagger.description = "Rejoindre un groupe."
+    */
     // Get uid and groupName from POST request
     const groupName = req.body.groupName;
 
    const uid = req.user.uid;
 
     if(uid == undefined || uid == "") {
-        return res.status(400).json("Error : uid is missing.");
+        return res.status(401).json("Vous n'êtes pas authentifié(e).");
     }
 
     if(groupName == undefined || groupName == "") {
-        return res.status(400).json("Error : group name is missing.");
+        return res.status(400).json("Aucun nom de groupe n'a été spécifié.");
     }
 
     // Current user     
@@ -44,7 +53,7 @@ module.exports.joinGroup = async (req, res) => {
 
     // Check if user exist
     if(user == undefined) {
-        return res.status(400).json("Error : user is not exist.");
+        return res.status(400).json("Erreur lors de la tentative de récupération de l'utilisateur.");
     }  
     
     // If user is already in a group
@@ -76,60 +85,42 @@ module.exports.joinGroup = async (req, res) => {
 
     updateUserGroup(groupName, user.username);  
 
-    return res.status(200).json("User has joined the group " + groupName);
+    return res.status(200).json("L'utilisateur a rejoint le groupe '" + groupName + "'.");
 }
 
 module.exports.listMembersOfGroup = async (req, res) => {    
-
-    // Get the Token
-    const auth = req.header('Authorization');
-
-    const token = auth.split(" ")[1];
-
-    var validToken;
-
-    // Check is the Token is correct one. 
-    try {
-        validToken = jwt.verify(token, process.env.JWT_SECRET);
-       
-    } catch (error) {
-        return res.status(401).json("ACCESS FORBIDDEN");
-    }
-
-    const currentUser = getUserByUid(validToken.uid);
+    /* 
+        #swagger.summary = 'Afficher les détails de son groupe (FT-5 bis)'
+        #swagger.description = "Affiche le détail de membres du groupe auquel l'utilisateur appartient."
+        #swagger.responses[403] = { description: "Vous n'appartenez à aucun groupe." } 
+    */
+    const currentUser = getUserByUid(req.user.uid);
 
     var listAllMembers = [];
-    
-     if( currentUser.group != undefined && currentUser.group != "") {
+
+    if(!currentUser.group || currentUser.group === '')
+        return res.status(403).json("Vous n'êtes pas autorisé(e) à effectuer cette opération.");
 
         const fs = require('fs');
         const file = '../api/data/users.json';
-        
-
         const data = fs.readFileSync(file, 'utf-8');
         const parsedData = JSON.parse(data);
 
         var userGroup;
+
         parsedData.groups.forEach(async g => {
             if(g.name == currentUser.group) {
                 userGroup = g;
             }
         })
 
-
         for (let index = 0; index < userGroup.members.length; index++) {
             var mName = userGroup.members[index];
 
             var result = {
-                memberName : "",
-                isChief : false
+                memberName : mName,
+                isChief : userGroup.chief === mName
             }
-
-            if(userGroup.chief === mName) {                    
-                result.isChief = true;
-            }
-
-            result.memberName = mName;
 
             // Check if user linked access is empty or not
             let userInformation = getUserByUserName(mName)
@@ -138,23 +129,26 @@ module.exports.listMembersOfGroup = async (req, res) => {
                 let link = userInformation.link
 
                 if (link.access != undefined && link.access != "") {
+
                     // Get spotify username
                     let spotifyUsername = await spotify.getSpotifyUsername(link.access);
                     result.spotifyPseudo = spotifyUsername;
-                }
 
+                    // Get spotify device name and current music info
+                    let userPlayingSongAndDevice = await spotify.getUserPlayingSongInfoAndDevice(link.access);
+                    console.log(userPlayingSongAndDevice)
+                    if (userPlayingSongAndDevice != undefined && userPlayingSongAndDevice != '') {
+                        result.device = userPlayingSongAndDevice.device.name;
+                        result.currentAlbumTitle = userPlayingSongAndDevice.item.album.name;
+                        result.artist = userPlayingSongAndDevice.artists[0].name;
+                    }
+                }
             }
+
             listAllMembers.push(result);
- 
         };
         return res.status(200).json(listAllMembers);
-
-    } else {
-
-        return res.status(401).json("Error listMembersOfGroup");
     }
-
-}
 
 // Create group
 function createGroup(newGroup) {

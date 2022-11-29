@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js",
+    "start": "nodemon index.js --ignore swagger.json --ignore ./doc/users.json",
     "swagger-autogen": "node ./doc/swagger-autogen.js"
   },
   "repository": {

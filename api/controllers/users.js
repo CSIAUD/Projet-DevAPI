@@ -5,7 +5,10 @@ const bcrypt = require("bcrypt");
 
 // CREATION D'UN COMPTE
 module.exports.register = async (req, res) => {
-    /* #swagger.responses[200] = { description: "Inscription réussie." } 
+    /*  
+        #swagger.summary = 'Inscrire un utilisateur (FT-1)'
+        #swagger.description = 'Crée un utilisateur dans la base de données.'
+        #swagger.responses[200] = { description: "Inscription réussie." } 
         #swagger.responses[400] = { description: "Aucun identifiant n'a été saisi." } 
         #swagger.responses[422] = { description: "Ce nom d'utilisateur n'est pas disponible." } 
     */
@@ -61,12 +64,25 @@ addUser = (user) => {
     });
 }
 
-// Recherche d'un utilisateur existant :
+// Recherche d'un utilisateur existant (par son username) :
 const findOne = (username) => {
     try {
         const file = require('../data/users.json');
         const users = file.users;
         const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+        return user;
+    } catch(err) {
+        console.log(err);
+        throw 'Unable to search users list.'
+    }
+}
+
+// Recherche d'un utilisateur existant (par son uid) :
+module.exports.findOneById = (uid) => {
+    try {
+        const file = require('../data/users.json');
+        const users = file.users;
+        const user = users.find(u => u.uid === uid);
         return user;
     } catch(err) {
         console.log(err);

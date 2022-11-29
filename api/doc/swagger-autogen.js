@@ -2,11 +2,29 @@ const swaggerAutogen = require('swagger-autogen')({ openapi: '3.0.0'});
 
 const port = process.env.PORT || 8080;
 
+const description = `
+⭐ Équipe :\n
+    • Injin Kim\n
+    • Nicolas Lépinay\n
+    • Matéo Palmieri\n
+    • Cyprien Siaud\n
+\n\n
+⭐ Fonctionnalités :\n
+    • FT-1 : Inscription\n
+    • FT-2 : Connexion\n
+    • FT-3 : Liaison du compte Spotify\n
+    • FT-4 : Rejoindre un groupe\n
+    • FT-5 : Consultation des groupes et des utilisateurs\n
+    • FT-6 : Personnalité de l'utilisateur\n
+    • FT-7 : Synchronisation\n
+    • FT-8 : Playlist\n
+`
+
 const doc = {
   info: {
     version: '1.0',      // by default: '1.0.0'
     title: 'YSpotify REST API',        // by default: 'REST API'
-    description: 'A description.',  // by default: ''
+    description: description,  // by default: ''
   },
   host: `localhost:${port}`,      // by default: 'localhost:3000'
   basePath: '/',  // by default: '/'
@@ -41,7 +59,8 @@ const endpointsFiles = ['.././api/index.js'];
 
 /* NOTE: if you use the express Router, you must pass in the 
    'endpointsFiles' only the root file where the route starts,
-   such as: index.js, app.js, routes.js, ... */
+   such as: index.js, app.js, routes.js, ... 
+*/
 
 const Run = () => {
     swaggerAutogen(outputFile, endpointsFiles, doc);

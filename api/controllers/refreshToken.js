@@ -4,6 +4,9 @@ var client_id = process.env.CLIENT_ID;
 var client_secret = process.env.CLIENT_SECRET;
 
 module.exports.refreshToken = function(req, res) {
+    /*  
+        #swagger.deprecated = true
+    */
     var refresh_token = req.query.refresh_token;
     var authOptions = {
         url: 'https://accounts.spotify.com/api/token',
