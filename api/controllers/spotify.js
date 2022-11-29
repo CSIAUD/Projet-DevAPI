@@ -1,4 +1,3 @@
-
 // const token = require('../controllers/spotify'); // Import du controller
 // token.getToken
 
@@ -47,42 +46,35 @@ module.exports.refreshToken = (req, res) => {
 // Lien avec le compte Spotify
 // Header Authorization => Bearer + Token user
 module.exports.link = async (req, res) => {
-    let uid;
-    let tab = (req.headers.authorization).split(' ');
-    if(tab[0] == "Bearer") {
-      uid = jwt.verify(tab[1], process.env.JWT_SECRET, (err, payload) => {
-          if(err)
-              return res.status(403).json("Le token d'accès est invalide.\nLe format suivant doit être respecté : Bearer <access-token>.");
-          return payload.uid;
-      })
-    }else{
-      uid = false;
-    }
+    /*  
+        #swagger.summary = "Lier l'utilisateur à un compte Spotify (FT-3)"
+        #swagger.description = "Lie l'utilisateur à un compte Spotify auquel il doit se connecter. Renvoie l'URL de connexion à Spotify."
+        #swagger.responses[200] = { description: "Requête valide. Connectez-vous à Spotify." } 
+    */
+    const uid = req.user.uid;
 
-    if(!uid) {
-      res.send("Invalid Header Authorization");
-      return;
-    }
     getToken(uid)
     
     let linked = await isLinked(uid);
-    if (linked) {
-        res.send("Compte déjà lié à Spotify");
+    if (!linked) {
+        return res.status(400).json("Ce compte a déjà été lié à Spotify.");
     } else { 
       // your application requests authorization
-      var scope = 'user-read-private user-read-email user-read-playback-state';
-      res.redirect(
-          'https://accounts.spotify.com/authorize?' +
+      const scope = 'user-read-private user-read-email user-read-playback-state';
+
+      const url = 'https://accounts.spotify.com/authorize?' +
         querystring.stringify(
-          {
+            {
             response_type: 'code',
             client_id: client_id,
             scope: scope,
             redirect_uri: redirect_uri,
             state: uid
-          }
+            }
         )
-      );
+
+        res.status(200);
+        return res.send(`Suivez le lien suivant pour vous identifier à Spotify :\n\n${url} \n\n`);
     }
 }
 
@@ -117,9 +109,9 @@ module.exports.callback = async (req, res) => {
     axios.post(authOptions.url, authOptions.form, {headers: authOptions.headers, state: state})
       .then(async response => { 
           if(await setTokens(response)){
-            res.send("Compte lié");
+            returnres.send("Votre compte a été lié à Spotify ✔️");
           }else{
-            res.send("Erreur");
+            res.send("⚠️ Une erreur est survenue lors de la liaison à Spotify.");
           }
       })
    }

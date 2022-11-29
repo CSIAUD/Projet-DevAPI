@@ -1,13 +1,41 @@
 {
   "users": [
     {
+      "uid": "d29183fc-d82e-41b6-8b6a-4251a1dc432d",
+      "username": "Nicolas",
+      "password": "$2b$10$uxE3LlEhiG8dOI616Dq1xOuOSUa7xp1IKXgdE/61pwD3Bs3yDClvO",
+      "group": "MonGroupe"
+    },
+    {
+      "uid": "143a56c6-c4c9-4d77-9e15-d58cbfaf3007",
+      "username": "Injin",
+      "password": "$2b$10$yNYjIhex8K13f90uPmPYSeVi56FnFYpnb8DvddCezW80c/ljxsu82",
+      "group": "Mon Super Groupe"
+    },
+    {
       "uid": "38f50a7a-c967-42a5-b7be-c10e85899b82",
       "username": "Cyp",
       "password": "$2b$10$EUQ6qvE3sRd8tTFBuK8MXutbz.hnu0AT7rPkuc6ifk8Nld4Q0eicq",
       "link": {
-        "access": "BQDCeCX1WcfmQDNu5ZWp4aQNbvoniIkgNUo6QbQToXZhZfWFHngOpEsTUoqEhsQS0XthUnnyGNHr-pK3nkv0f-ML2Wos4F11g7BjtpHYjEQFoKTipv7tT9Y9QfjuMyb-VWiEwjj8eSv3NnhGca8dQb-cT3Xd_S37aIE5LF--DM-Kq7NRIKUETRCO_OhEGvEYipCaIPVrV61De0idB7rj0o59SsxW3Qw",
-        "refresh": "AQDs5QjTL1WB-bS2NZemq-zoougjzmS52Wm0snchS2GoaH8JEDF6iMP9hSTNSWXBwS-q1kopMN3k_RUs7fJCOmYVWe6usWPPMqBC542FyV2q5jOVn3b-JedNQb_SiuV74QE"
+        "access": "BQCblC6eomq_JYDKTI9f--nj4vNQsKDbRDass1WydBBmz8UdQ5-VI1-ctvTHxuiXszX5WG-1OC53ACOwCO-s6vNxD4X_7M6cqeUWk07Be0SANgJMU74zOc84_tuewWnsNOOXWwwtsXSJeiTDFlgKOcA7Gblscj0WR7A9vX2E8BYlfeB2oumwHgXssxHF0mYgrAtV7u051hQHXqoaljS6EMJp7z8Olro",
+        "refresh": "AQAPjd3_c80a8qingswyCIgNsJ9v7YGoLFVId6p2HYCinPQuykCAvFmjnVw5gg4xyklZKE7wXEzNFuZsgnJWZeB9hAruStl3Yievs09h_0iK-M1ycgGKXfhj4YWDGleLFIs"
       }
+    }
+  ],
+  "groups": [
+    {
+      "name": "MonGroupe",
+      "chief": "Nicolas",
+      "members": [
+        "Nicolas"
+      ]
+    },
+    {
+      "name": "Mon Super Groupe",
+      "chief": "Injin",
+      "members": [
+        "Injin"
+      ]
     }
   ]
 }
