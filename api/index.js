@@ -1,28 +1,44 @@
 // 📚 Librairies
 const express = require('express');
+const request = require('request');
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('./swagger.json');
+
 require('dotenv').config();
-var request = require('request'); // "Request" library
 
 // 🚗 Routes
 const authRoute = require("./routes/auth");
 const usersRoute = require("./routes/users");
-const refreshTokenRoute = require("./routes/refreshToken");
+const groupsRoute = require("./routes/groups");   
+const spotifyRoute = require("./routes/spotify");
 
-let app = express();
+// ➡️ Module imports :
+const swagger = require("./doc/swagger-autogen.js");
 
-app.use(express.json()); // Body parser for POST requests
+// ⛰️ Environment variables :
+const port = process.env.PORT || 8080;
+const client_id = process.env.CLIENT_ID;
+const client_secret = process.env.CLIENT_SECRET;
+const redirect_uri = process.env.REDIRECT_URI;
 
-var port = process.env.PORT;
-var client_id = process.env.CLIENT_ID;
-var client_secret = process.env.CLIENT_SECRET;
-var redirect_uri = process.env.REDIRECT_URI;
+const app = express();
 
+// Body parser for POST requests
+app.use(express.json());
+
+// =====> API Routes
 app.use("/api/token", authRoute);
 app.use("/api/users", usersRoute);
+app.use("/api/groups", groupsRoute);
 
-// API Spotify =====
-app.use('/api/refresh_token', refreshTokenRoute);
+// =====> API Spotify
+app.use('/api/spotify', spotifyRoute);
+
+// =====> Swagger Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile, { swaggerOptions: { persistAuthorization: true } }));
+
+swagger.Run();
 
 app.listen(port, () =>  {
-    console.log('le serveur fonctionne sur le port ' + port)
-})
+    console.log(`Le serveur fonctionne sur le port ${port}...`);
+});
