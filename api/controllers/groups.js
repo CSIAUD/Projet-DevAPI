@@ -159,7 +159,13 @@ module.exports.listMembersOfGroup = async (req, res) => {
 
             listAllMembers.push(result);
         };
-        return res.status(200).json(listAllMembers);
+
+        let finalResult = {
+            group_name: userGroup.name,
+            members: listAllMembers,
+        }
+        
+        return res.status(200).json(finalResult);
     }
 
 // Create group
