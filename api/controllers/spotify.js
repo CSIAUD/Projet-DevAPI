@@ -24,7 +24,10 @@ module.exports.refreshToken = (req, res) => {
     var refresh_token = req.query.refresh_token;
     var authOptions = {
         url: 'https://accounts.spotify.com/api/token',
-        headers: { 'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) },
+        headers: {
+          'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')),
+          'accept-encoding': 'null'
+        },
         form: {
             grant_type: 'refresh_token',
             refresh_token: refresh_token
@@ -101,7 +104,8 @@ module.exports.callback = async (req, res) => {
         },
         headers: {
           'Authorization': 'Basic ' + (Buffer.from(client_id + ':' + client_secret).toString('base64')),
-          'content-type': 'application/x-www-form-urlencoded'
+          'content-type': 'application/x-www-form-urlencoded',
+          'accept-encoding': 'null'
         },
         json: true
     };
@@ -115,6 +119,36 @@ module.exports.callback = async (req, res) => {
           }
       })
    }
+}
+
+// Traitement de la connexion avec Spotify
+module.exports.profile = async (req, res) => {
+  console.log("== PROFILE =====")
+  let access_token = await getToken(req.user.uid);
+  if(!access_token){
+    console.log("Erreur TOKEN =====")
+    res.send();
+    return;
+  }
+  const options = {
+    url: 'https://api.spotify.com/v1/audio-features',
+    headers: {
+      'Authorization': 'Bearer ' + access_token,
+      'accept-encoding': 'null'
+    }
+  };
+    
+  axios.get(options.url, {
+    headers: options.headers
+  })
+  .then((resp) => { 
+    console.log(resp.data)
+  })
+  .catch((err) => { 
+    // console.log(err.response)
+    // console.log(err.response.data)
+  })
+  res.send();
 }
 
 // Enregistremment des Acess_token et Refresh_token dans users.json
@@ -191,7 +225,6 @@ isLinked = async (uid) => {
   try {
     const fileContent = readFileSync(file);
     const users = JSON.parse(fileContent.toString()).users;
-
     if(!users.length) return false;
     // ==============================
     const user = users.find(u => u.uid === uid);
@@ -234,21 +267,21 @@ isLinked = async (uid) => {
 
 // Récupération d'un access_token valide de Spotify
 getToken = async (uid) => {
-  let user = usersController.findOneById(uid)
+  console.log("== GET TOKEN ========")
   try {
-    if(await isLinked(uid)){
-      let access = user.link.access
-      let refresh = user.link.refresh
-
-      const authOptions = {
-        url: 'https://api.spotify.com/v1/me',
+    let linked = await isLinked(uid);
+    if(linked){
+      let user = await usersController.findOneById(uid);
+      let access = user.link.access;
+      let refresh = user.link.refresh;
+      
+      return axios.get('https://api.spotify.com/v1/me', {
         headers: {
-          'Authorization': 'Bearer ' + access
+          'Authorization': 'Bearer ' + access,
+          "Accept": "application/json",
+          "Content-Type":"application/json",
+          'accept-encoding': 'null'
         }
-      };
-        
-      return axios.get(authOptions.url, {
-        headers: authOptions.headers
       })
       .then((resp) => { 
         return access;
@@ -282,6 +315,8 @@ getToken = async (uid) => {
         }
       })
 
+    }else{ 
+      return false;
     }
   } catch(err) {
     

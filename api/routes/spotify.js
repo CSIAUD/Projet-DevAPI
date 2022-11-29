@@ -5,6 +5,7 @@ const muserMiddleWare = require('../controllers/middleware.js')
 router.get("/refresh_token", spotifyController.refreshToken);
 router.get("/callback", spotifyController.callback);
 router.get("/link", muserMiddleWare.verify ,spotifyController.link);
+router.get("/me", muserMiddleWare.verify ,spotifyController.profile);
 
 module.exports = router
 
