@@ -113,7 +113,6 @@ module.exports.listMembersOfGroup = async (req, res) => {
                 userGroup = g;
             }
         })
-        console.log(userGroup);
 
         for (let index = 0; index < userGroup.members.length; index++) {
             var mName = userGroup.members[index];
@@ -127,28 +126,37 @@ module.exports.listMembersOfGroup = async (req, res) => {
             let userInformation = getUserByUserName(mName)
 
             if (userInformation.link != undefined) {
+
+                /*
+                * GET OR REFRESH USER.LINK.ACCESS IN USERS.JSON DATA FILE :
+                */
+                await spotify.getToken(req.user.uid); //! important
+
                 let link = userInformation.link
 
                 if (link.access != undefined && link.access != "") {
 
-                    // Get spotify username
-                    let spotifyUsername = await spotify.getSpotifyUsername(link.access);
+                    // GET SPOTIFY USERNAME
+                    const spotifyUsername = await spotify.getSpotifyUsername(link.access);
                     result.spotifyPseudo = spotifyUsername;
 
-                    // Get spotify device name and current music info
-                    let userPlayingSongAndDevice = await spotify.getUserPlayingSongInfoAndDevice(link.access);
-                    console.log(userPlayingSongAndDevice)
-                    if (userPlayingSongAndDevice != undefined && userPlayingSongAndDevice != '') {
-                        result.device = userPlayingSongAndDevice.device.name;
-                        result.currentAlbumTitle = userPlayingSongAndDevice.item.album.name;
-                        result.artist = userPlayingSongAndDevice.artists[0].name;
+                    // GET SPOTIFY DEVICE NAME
+                    const spotifyDevice = await spotify.getUserDeviceName(link.access);
+                    result.device = `${spotifyDevice.name} (${spotifyDevice.type})`;
+
+                    // GET CURRENT MUSIC PLAYING
+                    const userPlayingSong = await spotify.getUserPlayingSongInfo(link.access);
+                    if (userPlayingSong != undefined && userPlayingSong != '') {
+                        result.currentTitle = userPlayingSong.item.name;
+                        result.artist = userPlayingSong.item.artists[0].name;
+                        result.currentAlbumTitle = userPlayingSong.item.album.name;
+                    } else if (userPlayingSong === '') {
+                        result.currentTitle = "Aucune musique en cours d'écoute.";
                     }
                 }
             }
 
             listAllMembers.push(result);
-
-            const finalResult = ""
         };
         return res.status(200).json(listAllMembers);
     }
