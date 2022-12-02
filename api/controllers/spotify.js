@@ -8,6 +8,7 @@ const fs = require('fs');
 const { writeFile, readFileSync } = require('fs');
 const axios = require('axios');
 const jwt = require("jsonwebtoken");
+const qs = require('qs');
 
 const usersController = require('../controllers/users');
 
@@ -59,11 +60,11 @@ module.exports.link = async (req, res) => {
     getToken(uid)
     
     let linked = await isLinked(uid);
-    if (!linked) {
+    if (linked) {
         return res.status(400).json("Ce compte a déjà été lié à Spotify.");
     } else { 
       // your application requests authorization
-      const scope = 'user-read-private user-read-email user-read-playback-state';
+      const scope = 'user-read-private user-read-email user-read-playback-state user-library-read';
 
       const url = 'https://accounts.spotify.com/authorize?' +
         querystring.stringify(
@@ -86,6 +87,7 @@ module.exports.callback = async (req, res) => {
   //  console.log(req.query);
    
    const code = req.query.code || null;
+   console.log(code)
    const client_secret = process.env.CLIENT_SECRET
    const state = req.query.state || null;
  
@@ -113,7 +115,7 @@ module.exports.callback = async (req, res) => {
     axios.post(authOptions.url, authOptions.form, {headers: authOptions.headers, state: state})
       .then(async response => { 
           if(await setTokens(response)){
-            returnres.send("Votre compte a été lié à Spotify ✔️");
+            return res.send("Votre compte a été lié à Spotify ✔️");
           }else{
             res.send("⚠️ Une erreur est survenue lors de la liaison à Spotify.");
           }
@@ -130,24 +132,85 @@ module.exports.profile = async (req, res) => {
     res.send();
     return;
   }
-  const options = {
-    url: 'https://api.spotify.com/v1/audio-features',
-    headers: {
-      'Authorization': 'Bearer ' + access_token,
-      'accept-encoding': 'null'
-    }
+  let idLists = [];
+  let idString = "";
+  let total = 0;
+  let actual = 0;
+  
+  const headers = {
+    'Authorization': 'Bearer ' + access_token,
+    'accept-encoding': 'null'
   };
-    
-  axios.get(options.url, {
-    headers: options.headers
+  
+  let ids = await axios.get('https://api.spotify.com/v1/me/tracks?limit=50', {
+    headers: headers
   })
   .then((resp) => { 
-    console.log(resp.data)
+    let str = "";
+    console.log("OK Tracks")
+    total = resp.data.total;
+    for (let item of resp.data.items) {
+      str += item.track.id;
+      actual++;
+    }
+    return str;
   })
   .catch((err) => { 
+    console.log("pas OK Tracks")
     // console.log(err.response)
-    // console.log(err.response.data)
+    console.log(err.response.data)
+    return false;
   })
+
+  if(ids != false){
+
+    while(actual < total){
+      let datas = await axios.get(`https://api.spotify.com/v1/me/tracks?limit=50&offset=${actual}`, {
+        headers: headers
+      })
+      .then((resp) => { 
+        let count = 0;
+        let str = "";
+        console.log("OK Tracks 2")
+        total = resp.data.total;
+        for (let item of resp.data.items) {
+          str += item.track.id;
+          if(((actual + count) % 100) + 1 != 0) str += ",";
+          count++;
+        }
+        return [str, count];
+      })
+      .catch((err) => { 
+        console.log("pas OK Tracks 2")
+        console.log(err)
+        // console.log(err.response.data)
+      })
+      actual += datas[1];
+      ids += datas[0];
+      if(actual % 100 == 0){
+        idLists.push(ids.substring(0, ids.length - 1));
+        ids = "";
+      }
+    }
+    console.log("Actual :",actual)
+    console.log("Total :",total)
+    if(ids != "") idLists.push(ids.substring(0, ids.length - 1));
+    
+    for (let list of idLists) {
+      // console.log(list)
+      await axios.get(`https://api.spotify.com/v1/audio-features?ids=${list}`, {
+        headers: headers
+      })
+      .then((resp) => { 
+        console.log("OK infos 3")
+        // console.log(resp.data)
+      })
+      .catch((err) => { 
+        console.log("pas OK Tracks 3")
+        console.log(err.response.data)
+      })
+    }
+  }
   res.send();
 }
 
@@ -228,6 +291,7 @@ isLinked = async (uid) => {
     if(!users.length) return false;
     // ==============================
     const user = users.find(u => u.uid === uid);
+    if(!user) return false;
     if(!user.link) return false;
     // ==============================
     if(user.link.access == "" || user.link.refresh == ""){
@@ -286,32 +350,30 @@ getToken = async (uid) => {
       .then((resp) => { 
         return access;
       })
-      .catch((err) => {
+      .catch(async (err) => {
         err = err.response.data.error;
         if(err.status == 401){
           console.log("== invalid token ==========\n");
-
           var refresh_token = refresh;
-          var authOptions = {
-              url: 'https://accounts.spotify.com/api/token',
-              headers: { 'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) },
-              form: {
-                  grant_type: 'refresh_token',
-                  refresh_token: refresh_token
-              },
-              json: true
-          };
-        
-          request.post(authOptions, function(error, response, body) {
-              if (!error && response.statusCode === 200) {
-                  var access_token = body.access_token;
-                  setAcessToken(uid, access_token);
-                  return access_token;
-              }else{
-                console.log(error)
-                console.log(response)
-              }
+
+          const data = qs.stringify({
+            'grant_type':'refresh_token',
+            'refresh_token': refresh_token
           });
+          return await axios.post('https://accounts.spotify.com/api/token', data, {
+            headers: { 
+              'Authorization': `Basic ${(new Buffer.from(client_id + ':' + client_secret).toString('base64'))}`,
+              'Content-Type': 'application/x-www-form-urlencoded',
+              "accept-encoding": 'null'
+            }
+          })
+          .then((resp) => {
+            return resp.data.access_token
+          })
+          .catch((err) => {
+            console.log(err)
+            return false;
+          })
         }
       })
 

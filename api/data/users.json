@@ -1,41 +1,13 @@
 {
   "users": [
     {
-      "uid": "d29183fc-d82e-41b6-8b6a-4251a1dc432d",
-      "username": "Nicolas",
-      "password": "$2b$10$uxE3LlEhiG8dOI616Dq1xOuOSUa7xp1IKXgdE/61pwD3Bs3yDClvO",
-      "group": "MonGroupe"
-    },
-    {
-      "uid": "143a56c6-c4c9-4d77-9e15-d58cbfaf3007",
-      "username": "Injin",
-      "password": "$2b$10$yNYjIhex8K13f90uPmPYSeVi56FnFYpnb8DvddCezW80c/ljxsu82",
-      "group": "Mon Super Groupe"
-    },
-    {
-      "uid": "38f50a7a-c967-42a5-b7be-c10e85899b82",
+      "uid": "7ea895fb-7400-494e-9ce5-3270bf8d95ba",
       "username": "Cyp",
-      "password": "$2b$10$EUQ6qvE3sRd8tTFBuK8MXutbz.hnu0AT7rPkuc6ifk8Nld4Q0eicq",
+      "password": "$2b$10$HaxLPc94MCxwxTa/Svt6wOFVv1d9YnoWoDlRdDzEmR7xBd0gP54pm",
       "link": {
-        "access": "BQA936UoWR4SFTnTPbesz_vPjR7nEKXA24zq404yTM_20_F4gqM4mdvWHGIsCxlDlOWQ0zqjX65aH-yjpTl3dlDKLVSEeKsDfhYqE7nJ5SZ6nO7br8BUAtMNkapxuCxmU4Yad0kp7VGQ8WBmLF5cjr3t8uMfSFsNGv-RnpYzmNYoU9pin0NJp0KZIVOJMuWkQMhSCUkb-XLicmFURnPzVdwePjUN2ss",
-        "refresh": "AQAPjd3_c80a8qingswyCIgNsJ9v7YGoLFVId6p2HYCinPQuykCAvFmjnVw5gg4xyklZKE7wXEzNFuZsgnJWZeB9hAruStl3Yievs09h_0iK-M1ycgGKXfhj4YWDGleLFIs"
+        "access": "BQBetfbZryhqglC0RgueBQUmXyEnT8rONYC4ah9VUAUVWIGTws7lc-j7TUdWoECaI6cwnfsqz7Qp5t2DDTJ4KBi7DT4kL0LzwrAJd3MOA5PHuVOyR4srhaByawoEMx31n5xwaNGjxPeONV3-KhEZKxnHCoS3PG6ytON4_z2cBUhVqaJdUxRwZwIIJLS-0TnZ_KAzGd_Fu1sOoxfgoTYq_mEmKi9gHW7gMr1DivFXpg",
+        "refresh": "AQDiRBgh_Y2mI20i76ixR0U2v-wRcNAUnPidkNgUohJH5ddZc6xlVKKiLiSZpGGSzLNWBiYitmUlQ6O265wAj8DTHECa62kGeREbjBG0PF-lKwmDhoxDYTxhQtFl1W4EuZk"
       }
-    }
-  ],
-  "groups": [
-    {
-      "name": "MonGroupe",
-      "chief": "Nicolas",
-      "members": [
-        "Nicolas"
-      ]
-    },
-    {
-      "name": "Mon Super Groupe",
-      "chief": "Injin",
-      "members": [
-        "Injin"
-      ]
     }
   ]
 }
