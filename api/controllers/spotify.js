@@ -14,6 +14,7 @@ const usersController = require('../controllers/users');
 
 var querystring = require('querystring');
 var request = require('request'); // "Request" library
+const { formatWithOptions } = require('util');
 const file = '../api/data/users.json';
 
 var client_id = process.env.CLIENT_ID;
@@ -133,9 +134,23 @@ module.exports.profile = async (req, res) => {
     return;
   }
   let idLists = [];
-  let idString = "";
   let total = 0;
   let actual = 0;
+  let generalStats = {
+    danceability: 0,
+    energy: 0,
+    key: 0,
+    loudness: 0,
+    mode: 0,
+    speechiness: 0,
+    acousticness: 0,
+    instrumentalness: 0,
+    liveness: 0,
+    valence: 0,
+    tempo: 0,
+    duration_ms: 0,
+    time_signature: 0
+  }
   
   const headers = {
     'Authorization': 'Bearer ' + access_token,
@@ -147,7 +162,7 @@ module.exports.profile = async (req, res) => {
   })
   .then((resp) => { 
     let str = "";
-    console.log("OK Tracks")
+    
     total = resp.data.total;
     for (let item of resp.data.items) {
       str += item.track.id;
@@ -171,7 +186,7 @@ module.exports.profile = async (req, res) => {
       .then((resp) => { 
         let count = 0;
         let str = "";
-        console.log("OK Tracks 2")
+
         total = resp.data.total;
         for (let item of resp.data.items) {
           str += item.track.id;
@@ -197,21 +212,39 @@ module.exports.profile = async (req, res) => {
     if(ids != "") idLists.push(ids.substring(0, ids.length - 1));
     
     for (let list of idLists) {
-      // console.log(list)
-      await axios.get(`https://api.spotify.com/v1/audio-features?ids=${list}`, {
+      let stats = await axios.get(`https://api.spotify.com/v1/audio-features?ids=${list}`, {
         headers: headers
       })
-      .then((resp) => { 
-        console.log("OK infos 3")
-        // console.log(resp.data)
+      .then((resp) => {
+        return resp.data;
       })
       .catch((err) => { 
         console.log("pas OK Tracks 3")
         console.log(err.response.data)
+        return false;
       })
+
+      if(!stats) break;
+
+      for (const stat of stats.audio_features) {
+        if(!stat) continue;
+        for (const key in stat) {
+          if(key == "type" || key == "id" || key == "uri" || key == "track_href" || key == "analysis_url") continue;
+          
+          generalStats[key] += stat[key];
+        }
+      }
+    }
+    for (const key in generalStats) {
+      let val = generalStats[key];
+      if(key == "duration_ms")
+        val = Math.round((val / total));
+      else
+        val = Math.round((val / total) * 100) / 100;
+      generalStats[key] = val
     }
   }
-  res.send();
+  res.send(generalStats);
 }
 
 // Enregistremment des Acess_token et Refresh_token dans users.json
@@ -249,7 +282,7 @@ setTokens = async (resp) => {
       console.error("Erreur Lecture User.", err);
   }
 }
-// Enregistremment des Acess_token et Refresh_token dans users.json
+// Enregistremment de Acess_token dans users.json
 setAcessToken = async (uid, token) => {
   try{
     const fileContent = readFileSync(file);
