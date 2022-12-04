@@ -4,7 +4,7 @@ const { uuid } = require('uuidv4');
 const bcrypt = require("bcrypt");
 
 // CREATION D'UN COMPTE
-module.exports.register = async (req, res) => {
+const register = async (req, res) => {
     /*  
         #swagger.summary = 'Inscrire un utilisateur (FT-1)'
         #swagger.description = 'Crée un utilisateur dans la base de données.'
@@ -43,7 +43,7 @@ module.exports.register = async (req, res) => {
 }
 
 // Ajout d'un nouvel utilisateur dans le fichier JSON :
-addUser = (user) => {
+const addUser = (user) => {
     const { writeFile, readFile } = require('fs');
     const file = '../api/data/users.json';
 
@@ -78,7 +78,7 @@ const findOne = (username) => {
 }
 
 // Recherche d'un utilisateur existant (par son uid) :
-module.exports.findOneById = (uid) => {
+const findOneById = (uid) => {
     try {
         const file = require('../data/users.json');
         const users = file.users;
@@ -88,4 +88,9 @@ module.exports.findOneById = (uid) => {
         console.log(err);
         throw 'Unable to search users list.'
     }
+}
+
+module.exports = { 
+    register, 
+    findOneById 
 }

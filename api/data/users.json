@@ -4,7 +4,11 @@
       "uid": "d29183fc-d82e-41b6-8b6a-4251a1dc432d",
       "username": "Nicolas",
       "password": "$2b$10$uxE3LlEhiG8dOI616Dq1xOuOSUa7xp1IKXgdE/61pwD3Bs3yDClvO",
-      "group": "MonGroupe"
+      "group": "MonGroupe",
+      "link": {
+        "access": "BQB-DVF3Q9n6ndg6kSRHYf0RYml6Sz8DhqJzTnvpRNlPBqBkdUnMW2jQQTGpnvBTxznCQR_o6Bfp6BZYQX0kk_O1v67lUjmoSO_77fhFOweQB99cIlbGZvvbdHpfRrUU-w19HeXRrsBydr4XoTNG5AknIFtmDYQx_88S5Kj49WzmT4jVHg6Kg6TzAcTN9ab6D6iGz8T2qrPNi9oNS_DlEcA",
+        "refresh": "AQDxVTUZEzomWavL7tHvb-hNT79h1IxJUuOKtdIXluszof5LroA2OtLJrEpwhRvyzrlpdH4AgARrLyXDGJQ0sJahyz7hGK4q1gEbHrd_I3HQxtP8oPXRdZekVH4TGntAvS0"
+      }
     },
     {
       "uid": "143a56c6-c4c9-4d77-9e15-d58cbfaf3007",
@@ -17,7 +21,7 @@
       "username": "Cyp",
       "password": "$2b$10$EUQ6qvE3sRd8tTFBuK8MXutbz.hnu0AT7rPkuc6ifk8Nld4Q0eicq",
       "link": {
-        "access": "BQCfj5-yjo80GZEMx8JUGfejkB7N4MpPBQb8cgs340xMeZ83KrFLOQTWSLvypHkob5QV-ToXQAuS1qaAl3tW_8ya17mzcpRVO8y7VEr1YdWzus5whoLd7lUrZ1UUFGUqhdR_8wTrMnGmFFBUhGWdqKXmlt-fptStKTf-4084GAlgk7YAR4ZhT5C8eU6QAQXBW0xNrhxmMwhe04zzUB0le-Vm6dZ7Rn4",
+        "access": "BQCblC6eomq_JYDKTI9f--nj4vNQsKDbRDass1WydBBmz8UdQ5-VI1-ctvTHxuiXszX5WG-1OC53ACOwCO-s6vNxD4X_7M6cqeUWk07Be0SANgJMU74zOc84_tuewWnsNOOXWwwtsXSJeiTDFlgKOcA7Gblscj0WR7A9vX2E8BYlfeB2oumwHgXssxHF0mYgrAtV7u051hQHXqoaljS6EMJp7z8Olro",
         "refresh": "AQAPjd3_c80a8qingswyCIgNsJ9v7YGoLFVId6p2HYCinPQuykCAvFmjnVw5gg4xyklZKE7wXEzNFuZsgnJWZeB9hAruStl3Yievs09h_0iK-M1ycgGKXfhj4YWDGleLFIs"
       },
       "group": "NewGroup"

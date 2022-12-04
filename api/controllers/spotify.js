@@ -1,51 +1,30 @@
-// const token = require('../controllers/spotify'); // Import du controller
-// token.getToken
-
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIzOGY1MGE3YS1jOTY3LTQyYTUtYjdiZS1jMTBlODU4OTliODIiLCJpYXQiOjE2NjkxMDc5MDgsImV4cCI6MTY2OTExMTUwOH0.URRf4diYEW33-3dxRcLVe9YtM48RBxqv_OxL3fzRdg8
-
 // 📚 Librairies
 const fs = require('fs');
 const { writeFile, readFileSync } = require('fs');
+const { formatWithOptions } = require('util');
+const { response } = require('express');
+const { Console } = require('console');
 const axios = require('axios');
 const jwt = require("jsonwebtoken");
-
-const usersController = require('../controllers/users');
-
+const qs = require('qs');
 var querystring = require('querystring');
 var request = require('request'); // "Request" library
+
+// 🕹️ Controllers
+const usersController = require('../controllers/users');
+const groupsController = require('../controllers/groups');
+
+// Data file
 const file = '../api/data/users.json';
 
+// ⛰️ Environment variables :
 var client_id = process.env.CLIENT_ID;
 var client_secret = process.env.CLIENT_SECRET;
 var redirect_uri = process.env.REDIRECT_URI;
 
-// Refresh du access_token de Spotify
-module.exports.refreshToken = (req, res) => {
-    var refresh_token = req.query.refresh_token;
-    var authOptions = {
-        url: 'https://accounts.spotify.com/api/token',
-        headers: { 'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) },
-        form: {
-            grant_type: 'refresh_token',
-            refresh_token: refresh_token
-        },
-        json: true
-    };
-  
-    request.post(authOptions, function(error, response, body) {
-        if (!error && response.statusCode === 200) {
-            var access_token = body.access_token;
-            res.send({
-              'access_token': access_token
-            });
-            setAcessToken(access_token);
-        }
-    });
-}
-
 // Lien avec le compte Spotify
 // Header Authorization => Bearer + Token user
-module.exports.link = async (req, res) => {
+const link = async (req, res) => {
     /*  
         #swagger.summary = "Lier l'utilisateur à un compte Spotify (FT-3)"
         #swagger.description = "Lie l'utilisateur à un compte Spotify auquel il doit se connecter. Renvoie l'URL de connexion à Spotify."
@@ -53,7 +32,7 @@ module.exports.link = async (req, res) => {
     */
     const uid = req.user.uid;
 
-    getToken(uid)
+    await getToken(uid)
     
     let linked = await isLinked(uid);
     if (linked) {
@@ -65,11 +44,11 @@ module.exports.link = async (req, res) => {
       const url = 'https://accounts.spotify.com/authorize?' +
         querystring.stringify(
             {
-            response_type: 'code',
-            client_id: client_id,
-            scope: scope,
-            redirect_uri: redirect_uri,
-            state: uid
+                response_type: 'code',
+                client_id: client_id,
+                scope: scope,
+                redirect_uri: redirect_uri,
+                state: uid
             }
         )
 
@@ -79,7 +58,7 @@ module.exports.link = async (req, res) => {
 }
 
 // Traitement de la connexion avec Spotify
-module.exports.callback = async (req, res) => {
+const callback = async (req, res) => {
   //  console.log(req.query);
    
    const code = req.query.code || null;
@@ -101,7 +80,8 @@ module.exports.callback = async (req, res) => {
         },
         headers: {
           'Authorization': 'Basic ' + (Buffer.from(client_id + ':' + client_secret).toString('base64')),
-          'content-type': 'application/x-www-form-urlencoded'
+          'content-type': 'application/x-www-form-urlencoded',
+          'accept-encoding': 'null'
         },
         json: true
     };
@@ -109,7 +89,7 @@ module.exports.callback = async (req, res) => {
     axios.post(authOptions.url, authOptions.form, {headers: authOptions.headers, state: state})
       .then(async response => { 
           if(await setTokens(response)){
-            returnres.send("Votre compte a été lié à Spotify ✔️");
+            return res.send("Votre compte a été lié à Spotify ✔️");
           }else{
             res.send("⚠️ Une erreur est survenue lors de la liaison à Spotify.");
           }
@@ -118,23 +98,23 @@ module.exports.callback = async (req, res) => {
 }
 
 // Display user nickname from spotify
-module.exports.getSpotifyUsername = async (userSpotifyToken) => {
+const getSpotifyUsername = async (userSpotifyToken) => {
     return axios.get('https://api.spotify.com/v1/me/', {
-      headers : {
-        Authorization : "Bearer " + userSpotifyToken
-      }
+        headers : {
+            Authorization : "Bearer " + userSpotifyToken
+        }
     })
     .then(function (response) {    
-      return response.data.display_name;
+        return response.data.display_name;
     })
     .catch(async function (error) {
-      return "ERROR : getSpotifyUsername";
+        console.log(error)
+        return "ERROR : getSpotifyUsername";
     }) 
   }
   
-  
 // Display user's play song : Title, Artist name, Album title
-module.exports.getUserPlayingSongInfo = async (userSpotifyToken) => {
+const getUserPlayingSongInfo = async (userSpotifyToken) => {
 return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
     headers : {
     Authorization : "Bearer " + userSpotifyToken
@@ -144,12 +124,12 @@ return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
     return response.data;
 })
 .catch(async function (error) {
+    console.log(error);
     return "ERROR : getUserPlayingSongInfo";
 })
 }
   
-  
-module.exports.getUserDeviceName = async (userSpotifyToken) => {
+const getUserDeviceName = async (userSpotifyToken) => {
 return axios.get('https://api.spotify.com/v1/me/player/devices', {
     headers : {
     Authorization : "Bearer " + userSpotifyToken
@@ -159,69 +139,275 @@ return axios.get('https://api.spotify.com/v1/me/player/devices', {
     return response.data.devices[0];
 })
 .catch(async function (error) {
+    console.log(error);
     return "ERROR : getUserDeviceName";
 })
 }
 
-// Récupération d'un access_token valide de Spotify
-module.exports. getToken = async (uid) => {
-    let user = usersController.findOneById(uid)
-    try {
-    if(await isLinked(uid)){
-        let access = user.link.access
-        let refresh = user.link.refresh
+// Traitement de la connexion avec Spotify
+const profile = async (req, res) => {
+    /*  
+        #swagger.summary = "Afficher la personnalité de l'utilisateur Spotify (FT-6)"
+        #swagger.description = "Affiche la personnalité de l'utilisateur en fonction de ses titres likés sur Spotify."
+        #swagger.responses[200] = { description: "Portrait généré avec succès." } 
+    */
 
-        const authOptions = {
-        url: 'https://api.spotify.com/v1/me',
-        headers: {
-            'Authorization': 'Bearer ' + access
-        }
-        };
+    console.log("== PROFILE =====")
+    let access_token = await getToken(req.user.uid);
+    if(!access_token) {
+        console.log("Erreur TOKEN =====")
+        return res.status(401).json("Access token invalide.");
+    }
+    let idLists = [];
+    let total = 0;
+    let actual = 0;
+    let generalStats = {
+        danceability: 0,
+        energy: 0,
+        key: 0,
+        loudness: 0,
+        mode: 0,
+        speechiness: 0,
+        acousticness: 0,
+        instrumentalness: 0,
+        liveness: 0,
+        valence: 0,
+        tempo: 0,
+        duration_ms: 0,
+        time_signature: 0
+    }
+    
+    const headers = {
+        'Authorization': 'Bearer ' + access_token,
+        'accept-encoding': 'null'
+    };
+    
+    let ids = await axios.get('https://api.spotify.com/v1/me/tracks?limit=50', {
+        headers: headers
+    })
+    .then((resp) => { 
+        let str = "";
         
-        return axios.get(authOptions.url, {
-        headers: authOptions.headers
+        total = resp.data.total;
+        for (let item of resp.data.items) {
+            str += item.track.id;
+            actual++;
+        }
+        return str;
+    })
+    .catch((err) => { 
+        console.log("pas OK Tracks")
+        console.log(err.response.data)
+        return false;
+    })
+  
+    if(ids != false) {
+  
+      while(actual < total){
+        let datas = await axios.get(`https://api.spotify.com/v1/me/tracks?limit=50&offset=${actual}`, {
+          headers: headers
         })
         .then((resp) => { 
-        return access;
+          let count = 0;
+          let str = "";
+  
+          total = resp.data.total;
+          for (let item of resp.data.items) {
+            str += item.track.id;
+            if(((actual + count) % 100) + 1 != 0) str += ",";
+            count++;
+          }
+          return [str, count];
         })
-        .catch((err) => {
-        err = err.response.data.error;
-        if(err.status == 401){
-            console.log("== invalid token ==========\n");
-
-            var refresh_token = refresh;
-            var authOptions = {
-                url: 'https://accounts.spotify.com/api/token',
-                headers: { 'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) },
-                form: {
-                    grant_type: 'refresh_token',
-                    refresh_token: refresh_token
-                },
-                json: true
-            };
-        
-            request.post(authOptions, function(error, response, body) {
-                if (!error && response.statusCode === 200) {
-                    var access_token = body.access_token;
-                    setAcessToken(uid, access_token);
-                    return access_token;
-                }else{
-                console.log(error)
-                console.log(response)
-                }
-            });
+        .catch((err) => { 
+          console.log("pas OK Tracks 2")
+          console.log(err)
+          // console.log(err.response.data)
+        })
+        actual += datas[1];
+        ids += datas[0];
+        if(actual % 100 == 0){
+          idLists.push(ids.substring(0, ids.length - 1));
+          ids = "";
         }
+      }
+  
+      console.log("total : ", total, "\nactual : ", actual)
+  
+      if(ids != "") idLists.push(ids.substring(0, ids.length - 1));
+      
+      for (let list of idLists) {
+        let stats = await axios.get(`https://api.spotify.com/v1/audio-features?ids=${list}`, {
+          headers: headers
         })
-
+        .then((resp) => {
+          return resp.data;
+        })
+        .catch((err) => { 
+          console.log("pas OK Tracks 3")
+          console.log(err.response.data)
+          return false;
+        })
+  
+        if(!stats) break;
+  
+        for (const stat of stats.audio_features) {
+          if(!stat) continue;
+          for (const key in stat) {
+            if(key == "type" || key == "id" || key == "uri" || key == "track_href" || key == "analysis_url") continue;
+            
+            generalStats[key] += stat[key];
+          }
+        }
+      }
+      for (const key in generalStats) {
+        let val = generalStats[key];
+        if(key == "duration_ms")
+          val = Math.round((val / total));
+        else
+          val = Math.round((val / total) * 100) / 100;
+        generalStats[key] = val
+      }
     }
-    } catch(err) {
+
+    return res.status(200).json(generalStats);
+}
+
+//Sync
+const synchronisation = async (req, res) => {
+    /*  
+        #swagger.summary = "Synchronisation (FT-7)"
+        #swagger.description = "Synchronise la lecture d'un chef de groupe avec celles des autres utilisateurs."
+        #swagger.responses[200] = { description: "Synchronisation effectuée avec succès." } 
+        #swagger.responses[204] = { description: "L'appareil d'écoute n'est pas actif." } 
+    */
+
+    let uid = req.user.uid;
+    let user = groupsController.getUserByUid(uid);
+  
+    if (!user.group || user.group === "") {
+        return res.status(400).json("L'utilisateur n'a pas de groupe.");
+    }
+
+    if(!user.link)
+        return res.status(400).json("L'utilisateur n'a pas lié de compte Spotify.");
+  
+    const isChiefOfGroup = groupsController.isUserChiefGroup(user.group, user.username);
+  
+    if(!isChiefOfGroup) {
+        return res.status(403).json("L'utilisateur n'est pas le chef du groupe.");
+    }
+
+    /*
+    * GET OR REFRESH USER.LINK.ACCESS IN USERS.JSON DATA FILE :
+    */  
+    await getToken(uid); //! important
+
+    let link = user.link
+
+    // Check if chief is connected to Spotify
+    if(!link.access || link.access === "") {
+        return res.status(403).json("Le token Spotify (link.access) n'est pas défini (null, undefined, empty string).");
+    }
     
-    // console.log(err.response);
+    let deviceInformations = await getUserDeviceName(link.access);
+    //console.log("device :")
+    //console.log(deviceInformations);
+
+    // Check if chief device is active
+    if(!deviceInformations.is_active) {
+        return res.status(204).json("L'appareil d'écoute n'est pas actif.");
+    }
+
+    // Get list of members
+    let listMembers = await groupsController.listMembersOfGroup(req, res);
+    //console.log("liste :")
+    //console.log(listMembers);
+
+    // For each member of the group
+    for (let index = 0; index < listMembers.length; index++) {
+    let member = listMembers[index];
+
+    memberInformation = groupsController.getUserByUserName(member.memberName);
+
+    // Check if member has link spotify
+    if(memberInformation.link.access != undefined && memberInformation.link.access != "") {
+        axios.put('https://api.spotify.com/v1/me/player', {
+                headers : {
+                Authorization : "Bearer " + userSpotifyToken
+                },
+                devices_ids : [ member.device.split(' ')[0] ]
+            })
+            .then(function (response) {      
+                return response;
+            })
+            .catch(async function (error) {
+                return "ERROR : Transfer playback";
+            })
+        }
+    } 
+    
+    return res.send(user); // ???
+}
+
+// Récupération d'un access_token valide de Spotify
+const getToken = async (uid) => {
+    try {
+        let linked = await isLinked(uid);
+        if(linked) {
+          let user = usersController.findOneById(uid);
+          let access = user.link.access;
+          let refresh = user.link.refresh;
+          
+          return axios.get('https://api.spotify.com/v1/me', {
+            headers: {
+              'Authorization': 'Bearer ' + access,
+              "Accept": "application/json",
+              "Content-Type":"application/json",
+              'accept-encoding': 'null'
+            }
+          })
+          .then((resp) => { 
+            return access;
+          })
+          .catch(async (err) => {
+            err = err.response.data.error;
+            if(err.status == 401) {
+              var refresh_token = refresh;
+    
+              const data = qs.stringify({
+                'grant_type':'refresh_token',
+                'refresh_token': refresh_token
+              });
+
+              return await axios.post('https://accounts.spotify.com/api/token', data, {
+                headers: { 
+                  'Authorization': `Basic ${(new Buffer.from(client_id + ':' + client_secret).toString('base64'))}`,
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  "accept-encoding": 'null'
+                }
+              })
+              .then((resp) => {
+                let token = resp.data.access_token;
+                setAcessToken(uid, token);
+                return token;
+              })
+              .catch((err) => {
+                console.log(err)
+                return false;
+              })
+            }
+          })
+        } else if (!linked) { 
+          return false;
+        }
+    } catch(err) {
+        console.log(err.response);
     }
 }
 
 // Enregistremment des Acess_token et Refresh_token dans users.json
-setTokens = async (resp) => {
+const setTokens = async (resp) => {
   let data = resp.data;
   let uid = resp.config.state;
   try{
@@ -256,7 +442,7 @@ setTokens = async (resp) => {
   }
 }
 // Enregistremment des Acess_token et Refresh_token dans users.json
-setAcessToken = async (uid, token) => {
+const setAcessToken = (uid, token) => {
   try{
     const fileContent = readFileSync(file);
     let parsedData = JSON.parse(fileContent.toString());
@@ -284,13 +470,13 @@ setAcessToken = async (uid, token) => {
       console.error("Une erreur est survenue lors de la mise à jour du fichier users.json.");
       return false;
     }
-  }catch(err){
+  } catch(err){
       console.error("Erreur Lecture User.", err);
   }
 }
 
 // Vérification du lien avec Spotify basé sur users.json
-isLinked = async (uid) => {
+const isLinked = async (uid) => {
   try {
     const fileContent = readFileSync(file);
     const users = JSON.parse(fileContent.toString()).users;
@@ -335,3 +521,13 @@ isLinked = async (uid) => {
   } 
 }
 
+module.exports = { 
+    callback, 
+    link, 
+    getToken, 
+    getSpotifyUsername,
+    getUserPlayingSongInfo,
+    getUserDeviceName,
+    profile,
+    synchronisation
+}
