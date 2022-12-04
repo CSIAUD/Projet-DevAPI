@@ -1,14 +1,14 @@
 const router = require("express").Router();
 const spotifyController = require("../controllers/spotify.js");
-const middleWare = require('../controllers/middleware.js');
+const userMiddleWare = require('../controllers/middleware.js');
 const { verify } = require("jsonwebtoken");
 
 router.get("/refresh_token", spotifyController.refreshToken);
 router.get("/callback", spotifyController.callback);
-router.get("/link", muserMiddleWare.verify ,spotifyController.link);
-router.get("/me", muserMiddleWare.verify ,spotifyController.profile);
+router.get("/link", userMiddleWare.verify ,spotifyController.link);
+router.get("/me", userMiddleWare.verify ,spotifyController.profile);
 
-router.put("/sync", middleWare.verify, spotifyController.synchronisation);
+router.put("/sync", userMiddleWare.verify, spotifyController.synchronisation);
 
 module.exports = router
 

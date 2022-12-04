@@ -61,7 +61,7 @@ module.exports.link = async (req, res) => {
     */
     const uid = req.user.uid;
 
-    getToken(uid)
+    getTokenFunction(uid)
     
     let linked = await isLinked(uid);
     if (linked) {
@@ -84,6 +84,11 @@ module.exports.link = async (req, res) => {
         res.status(200);
         return res.send(`Suivez le lien suivant pour vous identifier à Spotify :\n\n${url} \n\n`);
     }
+}
+
+// Récupération d'un access_token valide de Spotify
+module.exports.getToken = async (uid) => {
+  getTokenFunction(uid);
 }
 
 // Traitement de la connexion avec Spotify
@@ -130,7 +135,7 @@ module.exports.callback = async (req, res) => {
 // Traitement de la connexion avec Spotify
 module.exports.profile = async (req, res) => {
   console.log("== PROFILE =====")
-  let access_token = await getToken(req.user.uid);
+  let access_token = await getTokenFunction(req.user.uid);
   if(!access_token){
     console.log("Erreur TOKEN =====")
     res.send();
@@ -251,8 +256,93 @@ module.exports.profile = async (req, res) => {
   res.send(generalStats);
 }
 
-// Récupération d'un access_token valide de Spotify
-module.exports.getToken = async (uid) => {
+
+// Display user nickname from spotify
+module.exports.getSpotifyUsername = async (userSpotifyToken) => {
+    return axios.get('https://api.spotify.com/v1/me/', {
+      headers : {
+        Authorization : "Bearer " + userSpotifyToken
+      }
+    })
+    .then(function (response) {    
+      return response.data.display_name;
+    })
+    .catch(async function (error) {
+      return "ERROR : getSpotifyUsername";
+    }) 
+}
+
+//Sync
+module.exports.synchronisation = async (req, res) => {
+  let uid = req.user.uid;
+
+  let user = await groupsController.getUserWithUid(uid);
+
+  if (user.group == undefined || user.group == "") {
+    return res.send("L'utilisateur n'a pas de groupe.");
+  }
+
+  let isChiefOfGroup = await groupsController.isUserChiefGroupController(user.group, user.username);
+
+  if( isChiefOfGroup == false ) {
+    return res.send("L'utilisateur n'est pas le chef du groupe.");
+  }
+
+  if (user.link != undefined) {
+
+    /*
+    * GET OR REFRESH USER.LINK.ACCESS IN USERS.JSON DATA FILE :
+    */
+    await getTokenFunction(uid); //! important
+
+    let link = user.link
+
+    if (link.access != undefined && link.access != "") {
+      console.log("Chief linked spotify")
+    }
+
+  }
+
+
+  console.log(uid);
+
+  return res.send(user);
+}
+  
+// Display user's play song : Title, Artist name, Album title
+module.exports.getUserPlayingSongInfo = async (userSpotifyToken) => {
+  return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
+      headers : {
+      Authorization : "Bearer " + userSpotifyToken
+      }
+  }).then((responseCurrentPlaying) => {
+    // If user is currently playing
+    if (responseCurrentPlaying.data.device.is_active) {
+      return responseCurrentPlaying;
+    }
+    
+  })
+  .catch(async function (error) {
+      return "ERROR : getUserPlayingSongInfo";
+  })
+}
+  
+  
+module.exports.getUserDeviceName = async (userSpotifyToken) => {
+  return axios.get('https://api.spotify.com/v1/me/player/devices', {
+      headers : {
+      Authorization : "Bearer " + userSpotifyToken
+      }
+  })
+  .then(function (response) {
+      return response.data.devices[0];
+  })
+  .catch(async function (error) {
+      return "ERROR : getUserDeviceName";
+  })
+}
+
+getTokenFunction = async(uid) => {
   console.log("== GET TOKEN ========")
   try {
     let linked = await isLinked(uid);
@@ -304,92 +394,6 @@ module.exports.getToken = async (uid) => {
   } catch(err) {
     console.log(err.response);
   }
-}
-
-
-// Display user nickname from spotify
-module.exports.getSpotifyUsername = async (userSpotifyToken) => {
-    return axios.get('https://api.spotify.com/v1/me/', {
-      headers : {
-        Authorization : "Bearer " + userSpotifyToken
-      }
-    })
-    .then(function (response) {    
-      return response.data.display_name;
-    })
-    .catch(async function (error) {
-      return "ERROR : getSpotifyUsername";
-    }) 
-}
-
-//Sync
-module.exports.synchronisation = async (req, res) => {
-  let uid = req.user.uid;
-
-  let user = await groupsController.getUserWithUid(uid);
-
-  if (user.group == undefined || user.group == "") {
-    return res.send("L'utilisateur n'a pas de groupe.");
-  }
-
-  let isChiefOfGroup = await groupsController.isUserChiefGroupController(user.group, user.username);
-
-  if( isChiefOfGroup == false ) {
-    return res.send("L'utilisateur n'est pas le chef du groupe.");
-  }
-
-  if (user.link != undefined) {
-
-    /*
-    * GET OR REFRESH USER.LINK.ACCESS IN USERS.JSON DATA FILE :
-    */
-    await getToken(uid); //! important
-
-    let link = user.link
-
-    if (link.access != undefined && link.access != "") {
-      console.log("Chief linked spotify")
-    }
-
-  }
-
-
-  console.log(uid);
-
-  return res.send(user);
-}
-  
-// Display user's play song : Title, Artist name, Album title
-module.exports.getUserPlayingSongInfo = async (userSpotifyToken) => {
-  return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
-      headers : {
-      Authorization : "Bearer " + userSpotifyToken
-      }
-  }).then((responseCurrentPlaying) => {
-    // If user is currently playing
-    if (responseCurrentPlaying.data.device.is_active) {
-      return responseCurrentPlaying;
-    }
-    
-  })
-  .catch(async function (error) {
-      return "ERROR : getUserPlayingSongInfo";
-  })
-}
-  
-  
-module.exports.getUserDeviceName = async (userSpotifyToken) => {
-  return axios.get('https://api.spotify.com/v1/me/player/devices', {
-      headers : {
-      Authorization : "Bearer " + userSpotifyToken
-      }
-  })
-  .then(function (response) {
-      return response.data.devices[0];
-  })
-  .catch(async function (error) {
-      return "ERROR : getUserDeviceName";
-  })
 }
 
 // Enregistremment des Acess_token et Refresh_token dans users.json
