@@ -1,6 +1,5 @@
 // 📚 Librairies
 const express = require('express');
-const request = require('request');
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('./swagger.json');
 

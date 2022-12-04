@@ -277,8 +277,8 @@
         ]
       }
     },
-    "/api/spotify/me": {
-      "get": {
+    "/api/spotify/sync": {
+      "put": {
         "description": "",
         "parameters": [
           {
