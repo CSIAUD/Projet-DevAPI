@@ -8,12 +8,14 @@ const fs = require('fs');
 const { writeFile, readFileSync } = require('fs');
 const axios = require('axios');
 const jwt = require("jsonwebtoken");
+const qs = require('qs');
 
 const usersController = require('../controllers/users');
 const groupsController = require('../controllers/groups');
 
 var querystring = require('querystring');
 var request = require('request'); // "Request" library
+const { formatWithOptions } = require('util');
 const { response } = require('express');
 const { Console } = require('console');
 const file = '../api/data/users.json';
@@ -27,7 +29,10 @@ module.exports.refreshToken = (req, res) => {
     var refresh_token = req.query.refresh_token;
     var authOptions = {
         url: 'https://accounts.spotify.com/api/token',
-        headers: { 'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) },
+        headers: {
+          'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')),
+          'accept-encoding': 'null'
+        },
         form: {
             grant_type: 'refresh_token',
             refresh_token: refresh_token
@@ -56,14 +61,14 @@ module.exports.link = async (req, res) => {
     */
     const uid = req.user.uid;
 
-    getToken(uid)
+    getTokenFunction(uid)
     
     let linked = await isLinked(uid);
     if (linked) {
         return res.status(400).json("Ce compte a déjà été lié à Spotify.");
     } else { 
       // your application requests authorization
-      const scope = 'user-read-private user-read-email user-read-playback-state';
+      const scope = 'user-read-private user-read-email user-read-playback-state user-library-read';
 
       const url = 'https://accounts.spotify.com/authorize?' +
         querystring.stringify(
@@ -81,11 +86,17 @@ module.exports.link = async (req, res) => {
     }
 }
 
+// Récupération d'un access_token valide de Spotify
+module.exports.getToken = async (uid) => {
+  getTokenFunction(uid);
+}
+
 // Traitement de la connexion avec Spotify
 module.exports.callback = async (req, res) => {
   //  console.log(req.query);
    
    const code = req.query.code || null;
+   console.log(code)
    const client_secret = process.env.CLIENT_SECRET
    const state = req.query.state || null;
  
@@ -104,7 +115,8 @@ module.exports.callback = async (req, res) => {
         },
         headers: {
           'Authorization': 'Basic ' + (Buffer.from(client_id + ':' + client_secret).toString('base64')),
-          'content-type': 'application/x-www-form-urlencoded'
+          'content-type': 'application/x-www-form-urlencoded',
+          'accept-encoding': 'null'
         },
         json: true
     };
@@ -112,13 +124,138 @@ module.exports.callback = async (req, res) => {
     axios.post(authOptions.url, authOptions.form, {headers: authOptions.headers, state: state})
       .then(async response => { 
           if(await setTokens(response)){
-            returnres.send("Votre compte a été lié à Spotify ✔️");
+            return res.send("Votre compte a été lié à Spotify ✔️");
           }else{
             res.send("⚠️ Une erreur est survenue lors de la liaison à Spotify.");
           }
       })
    }
 }
+
+// Traitement de la connexion avec Spotify
+module.exports.profile = async (req, res) => {
+  console.log("== PROFILE =====")
+  let access_token = await getTokenFunction(req.user.uid);
+  if(!access_token){
+    console.log("Erreur TOKEN =====")
+    res.send();
+    return;
+  }
+  let idLists = [];
+  let total = 0;
+  let actual = 0;
+  let generalStats = {
+    danceability: 0,
+    energy: 0,
+    key: 0,
+    loudness: 0,
+    mode: 0,
+    speechiness: 0,
+    acousticness: 0,
+    instrumentalness: 0,
+    liveness: 0,
+    valence: 0,
+    tempo: 0,
+    duration_ms: 0,
+    time_signature: 0
+  }
+  
+  const headers = {
+    'Authorization': 'Bearer ' + access_token,
+    'accept-encoding': 'null'
+  };
+  
+  let ids = await axios.get('https://api.spotify.com/v1/me/tracks?limit=50', {
+    headers: headers
+  })
+  .then((resp) => { 
+    let str = "";
+    
+    total = resp.data.total;
+    for (let item of resp.data.items) {
+      str += item.track.id;
+      actual++;
+    }
+    return str;
+  })
+  .catch((err) => { 
+    console.log("pas OK Tracks")
+    // console.log(err.response)
+    console.log(err.response.data)
+    return false;
+  })
+
+  if(ids != false){
+
+    while(actual < total){
+      let datas = await axios.get(`https://api.spotify.com/v1/me/tracks?limit=50&offset=${actual}`, {
+        headers: headers
+      })
+      .then((resp) => { 
+        let count = 0;
+        let str = "";
+
+        total = resp.data.total;
+        for (let item of resp.data.items) {
+          str += item.track.id;
+          if(((actual + count) % 100) + 1 != 0) str += ",";
+          count++;
+        }
+        return [str, count];
+      })
+      .catch((err) => { 
+        console.log("pas OK Tracks 2")
+        console.log(err)
+        // console.log(err.response.data)
+      })
+      actual += datas[1];
+      ids += datas[0];
+      if(actual % 100 == 0){
+        idLists.push(ids.substring(0, ids.length - 1));
+        ids = "";
+      }
+    }
+
+    console.log("total : ", total, "\nactual : ", actual)
+
+    if(ids != "") idLists.push(ids.substring(0, ids.length - 1));
+    
+    for (let list of idLists) {
+      let stats = await axios.get(`https://api.spotify.com/v1/audio-features?ids=${list}`, {
+        headers: headers
+      })
+      .then((resp) => {
+        return resp.data;
+      })
+      .catch((err) => { 
+        console.log("pas OK Tracks 3")
+        console.log(err.response.data)
+        return false;
+      })
+
+      if(!stats) break;
+
+      for (const stat of stats.audio_features) {
+        if(!stat) continue;
+        for (const key in stat) {
+          if(key == "type" || key == "id" || key == "uri" || key == "track_href" || key == "analysis_url") continue;
+          
+          generalStats[key] += stat[key];
+        }
+      }
+    }
+    for (const key in generalStats) {
+      let val = generalStats[key];
+      if(key == "duration_ms")
+        val = Math.round((val / total));
+      else
+        val = Math.round((val / total) * 100) / 100;
+      generalStats[key] = val
+    }
+  }
+  res.send(generalStats);
+}
+
 
 // Display user nickname from spotify
 module.exports.getSpotifyUsername = async (userSpotifyToken) => {
@@ -156,7 +293,7 @@ module.exports.synchronisation = async (req, res) => {
     /*
     * GET OR REFRESH USER.LINK.ACCESS IN USERS.JSON DATA FILE :
     */
-    await getToken(uid); //! important
+    await getTokenFunction(uid); //! important
 
     let link = user.link
 
@@ -183,95 +320,91 @@ module.exports.synchronisation = async (req, res) => {
   return res.send(user);
 }
   
-  
 // Display user's play song : Title, Artist name, Album title
 module.exports.getUserPlayingSongInfo = async (userSpotifyToken) => {
-return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
-    headers : {
-    Authorization : "Bearer " + userSpotifyToken
+  return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
+      headers : {
+      Authorization : "Bearer " + userSpotifyToken
+      }
+  }).then((responseCurrentPlaying) => {
+    // If user is currently playing
+    if (responseCurrentPlaying.data.device.is_active) {
+      return responseCurrentPlaying;
     }
-}).then((responseCurrentPlaying) => {
-  // If user is currently playing
-  if (responseCurrentPlaying.data.device.is_active) {
-    return responseCurrentPlaying;
-  }
-  
-})
-.catch(async function (error) {
-    return "ERROR : getUserPlayingSongInfo";
-})
+    
+  })
+  .catch(async function (error) {
+      return "ERROR : getUserPlayingSongInfo";
+  })
 }
   
   
 module.exports.getUserDeviceName = async (userSpotifyToken) => {
-return axios.get('https://api.spotify.com/v1/me/player/devices', {
-    headers : {
-    Authorization : "Bearer " + userSpotifyToken
-    }
-})
-.then(function (response) {
-    return response.data.devices[0];
-})
-.catch(async function (error) {
-    return "ERROR : getUserDeviceName";
-})
+  return axios.get('https://api.spotify.com/v1/me/player/devices', {
+      headers : {
+      Authorization : "Bearer " + userSpotifyToken
+      }
+  })
+  .then(function (response) {
+      return response.data.devices[0];
+  })
+  .catch(async function (error) {
+      return "ERROR : getUserDeviceName";
+  })
 }
 
-// Récupération d'un access_token valide de Spotify
-module.exports.getToken = async (uid) => {
-    let user = usersController.findOneById(uid)
-    try {
-    if(await isLinked(uid)){
-        let access = user.link.access
-        let refresh = user.link.refresh
-
-        const authOptions = {
-        url: 'https://api.spotify.com/v1/me',
+getTokenFunction = async(uid) => {
+  console.log("== GET TOKEN ========")
+  try {
+    let linked = await isLinked(uid);
+    if(linked){
+      let user = await usersController.findOneById(uid);
+      let access = user.link.access;
+      let refresh = user.link.refresh;
+      
+      return axios.get('https://api.spotify.com/v1/me', {
         headers: {
-            'Authorization': 'Bearer ' + access
+          'Authorization': 'Bearer ' + access,
+          "Accept": "application/json",
+          "Content-Type":"application/json",
+          'accept-encoding': 'null'
         }
-        };
-        
-        return axios.get(authOptions.url, {
-        headers: authOptions.headers
-        })
-        .then((resp) => { 
+      })
+      .then((resp) => { 
         return access;
-        })
-        .catch((err) => {
+      })
+      .catch(async (err) => {
         err = err.response.data.error;
         if(err.status == 401){
-            console.log("== invalid token ==========\n");
+          var refresh_token = refresh;
 
-            var refresh_token = refresh;
-            var authOptions = {
-                url: 'https://accounts.spotify.com/api/token',
-                headers: { 'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) },
-                form: {
-                    grant_type: 'refresh_token',
-                    refresh_token: refresh_token
-                },
-                json: true
-            };
-        
-            request.post(authOptions, function(error, response, body) {
-                if (!error && response.statusCode === 200) {
-                    var access_token = body.access_token;
-                    setAcessToken(uid, access_token);
-                    return access_token;
-                }else{
-                console.log(error)
-                console.log(response)
-                }
-            });
+          const data = qs.stringify({
+            'grant_type':'refresh_token',
+            'refresh_token': refresh_token
+          });
+          return await axios.post('https://accounts.spotify.com/api/token', data, {
+            headers: { 
+              'Authorization': `Basic ${(new Buffer.from(client_id + ':' + client_secret).toString('base64'))}`,
+              'Content-Type': 'application/x-www-form-urlencoded',
+              "accept-encoding": 'null'
+            }
+          })
+          .then((resp) => {
+            return resp.data.access_token
+          })
+          .catch((err) => {
+            console.log(err)
+            return false;
+          })
         }
-        })
+      })
 
+    }else{ 
+      return false;
     }
-    } catch(err) {
-    
-    // console.log(err.response);
-    }
+  } catch(err) {
+    console.log(err.response);
+  }
 }
 
 // Enregistremment des Acess_token et Refresh_token dans users.json
@@ -309,7 +442,7 @@ setTokens = async (resp) => {
       console.error("Erreur Lecture User.", err);
   }
 }
-// Enregistremment des Acess_token et Refresh_token dans users.json
+// Enregistremment de Acess_token dans users.json
 setAcessToken = async (uid, token) => {
   try{
     const fileContent = readFileSync(file);
@@ -348,10 +481,10 @@ isLinked = async (uid) => {
   try {
     const fileContent = readFileSync(file);
     const users = JSON.parse(fileContent.toString()).users;
-
     if(!users.length) return false;
     // ==============================
     const user = users.find(u => u.uid === uid);
+    if(!user) return false;
     if(!user.link) return false;
     // ==============================
     if(user.link.access == "" || user.link.refresh == ""){
@@ -387,61 +520,4 @@ isLinked = async (uid) => {
       console.log('error');
       console.log(err);
   } 
-}
-
-// Récupération d'un access_token valide de Spotify
-getToken = async (uid) => {
-  let user = usersController.findOneById(uid)
-  try {
-    if(await isLinked(uid)){
-      let access = user.link.access
-      let refresh = user.link.refresh
-
-      const authOptions = {
-        url: 'https://api.spotify.com/v1/me',
-        headers: {
-          'Authorization': 'Bearer ' + access
-        }
-      };
-        
-      return axios.get(authOptions.url, {
-        headers: authOptions.headers
-      })
-      .then((resp) => { 
-        return access;
-      })
-      .catch((err) => {
-        err = err.response.data.error;
-        if(err.status == 401){
-          console.log("== invalid token ==========\n");
-
-          var refresh_token = refresh;
-          var authOptions = {
-              url: 'https://accounts.spotify.com/api/token',
-              headers: { 'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) },
-              form: {
-                  grant_type: 'refresh_token',
-                  refresh_token: refresh_token
-              },
-              json: true
-          };
-        
-          request.post(authOptions, function(error, response, body) {
-              if (!error && response.statusCode === 200) {
-                  var access_token = body.access_token;
-                  setAcessToken(uid, access_token);
-                  return access_token;
-              }else{
-                console.log(error)
-                console.log(response)
-              }
-          });
-        }
-      })
-
-    }
-  } catch(err) {
-    
-    // console.log(err.response);
-  }
 }
