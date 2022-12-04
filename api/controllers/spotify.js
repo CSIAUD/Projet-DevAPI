@@ -141,9 +141,12 @@ return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
     headers : {
     Authorization : "Bearer " + userSpotifyToken
     }
-})
-.then(function (response) {
-    return response.data;
+}).then((responseCurrentPlaying) => {
+  // If user is currently playing
+  if (responseCurrentPlaying.data.device.is_active) {
+    return responseCurrentPlaying;
+  }
+  
 })
 .catch(async function (error) {
     return "ERROR : getUserPlayingSongInfo";
