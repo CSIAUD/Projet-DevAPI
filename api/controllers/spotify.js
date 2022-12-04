@@ -104,7 +104,7 @@ const getSpotifyUsername = async (userSpotifyToken) => {
             Authorization : "Bearer " + userSpotifyToken
         }
     })
-    .then(function (response) {    
+    .then(function (response) {   
         return response.data.display_name;
     })
     .catch(async function (error) {

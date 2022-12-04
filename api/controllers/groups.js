@@ -142,14 +142,14 @@ const listMembersOfGroup = async (req, res) => {
                     // GET SPOTIFY DEVICE NAME
                     const spotifyDevice = await spotify.getUserDeviceName(link.access);
                     if(spotifyDevice.name && spotifyDevice.type)
-                        result.device = `${spotifyDevice.name} (${spotifyDevice.type})`;
+                        result.device = `${spotifyDevice?.name} (${spotifyDevice?.type})`;
 
                     // GET CURRENT MUSIC PLAYING
                     const userPlayingSong = await spotify.getUserPlayingSongInfo(link.access);
                     if (userPlayingSong != undefined && userPlayingSong != '') {
-                        result.currentTitle = userPlayingSong.item.name;
-                        result.artist = userPlayingSong.item.artists[0].name;
-                        result.currentAlbumTitle = userPlayingSong.item.album.name;
+                        result.currentTitle = userPlayingSong?.item?.name;
+                        result.artist = userPlayingSong?.item?.artists[0]?.name;
+                        result.currentAlbumTitle = userPlayingSong?.item?.album?.name;
                     } else if (userPlayingSong === '') {
                         result.currentTitle = "Aucune musique en cours d'écoute.";
                     }
