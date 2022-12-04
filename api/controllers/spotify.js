@@ -207,8 +207,9 @@ module.exports.profile = async (req, res) => {
         ids = "";
       }
     }
-    console.log("Actual :",actual)
-    console.log("Total :",total)
+
+    console.log("total : ", total, "\nactual : ", actual)
+
     if(ids != "") idLists.push(ids.substring(0, ids.length - 1));
     
     for (let list of idLists) {
@@ -386,7 +387,6 @@ getToken = async (uid) => {
       .catch(async (err) => {
         err = err.response.data.error;
         if(err.status == 401){
-          console.log("== invalid token ==========\n");
           var refresh_token = refresh;
 
           const data = qs.stringify({
@@ -414,7 +414,6 @@ getToken = async (uid) => {
       return false;
     }
   } catch(err) {
-    
-    // console.log(err.response);
+    console.log(err.response);
   }
 }
