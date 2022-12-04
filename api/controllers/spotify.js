@@ -160,8 +160,19 @@ module.exports.synchronisation = async (req, res) => {
 
     let link = user.link
 
+    // Check if chief is connected to Spotify
     if (link.access != undefined && link.access != "") {
-      console.log("Chief linked spotify")
+    
+      let deviceInformations = this.getUserDeviceName(link.access);
+
+      // Check if chief device is active
+      if (deviceInformations.is_active) {
+        // Get list of members
+
+        let listMembers = await groupsController.listMembersOfGroup(req, res);
+        console.log(listMembers);
+
+      }
     }
 
   }
