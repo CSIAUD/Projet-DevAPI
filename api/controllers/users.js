@@ -1,5 +1,4 @@
 // 📚 Librairies
-const fs = require('fs');
 const { uuid } = require('uuidv4');
 const bcrypt = require("bcrypt");
 
@@ -29,7 +28,12 @@ module.exports.register = async (req, res) => {
         const user = {
             uid: uuid(),
             username: req.body.username,
-            password: hashedPassword
+            password: hashedPassword,
+            group : "",
+            link : {
+                access: "",
+                refresh: ""
+              }
         };
 
         addUser(user);
@@ -45,7 +49,8 @@ module.exports.register = async (req, res) => {
 // Ajout d'un nouvel utilisateur dans le fichier JSON :
 addUser = (user) => {
     const { writeFile, readFile } = require('fs');
-    const file = '../api/data/users.json';
+    //const file = '../api/users.json';
+    const file = USER_JSON;
 
     readFile(file, (err, data) => {
         if (err) {
@@ -67,7 +72,8 @@ addUser = (user) => {
 // Recherche d'un utilisateur existant (par son username) :
 const findOne = (username) => {
     try {
-        const file = require('../data/users.json');
+        //const file = require('../users.json');
+        const file = require(USER_JSON);
         const users = file.users;
         const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
         return user;

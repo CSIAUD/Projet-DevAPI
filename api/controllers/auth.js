@@ -20,6 +20,7 @@ module.exports.getToken = async (req, res) => {
             return res.status(401).json("Aucun identifiant n'a été fourni. Une authentification Basic Auth est requise.");
 
         const credentials = auth.split(' ')[1];
+        //console.log('auth : ' + auth)
         const raw = Buffer.from(credentials, 'base64').toString('utf8');
         const [username, password] = raw.split(':');
 

@@ -113,7 +113,6 @@ module.exports.listMembersOfGroup = async (req, res) => {
                 userGroup = g;
             }
         })
-        console.log(userGroup);
 
         for (let index = 0; index < userGroup.members.length; index++) {
             var mName = userGroup.members[index];
@@ -125,33 +124,92 @@ module.exports.listMembersOfGroup = async (req, res) => {
 
             // Check if user linked access is empty or not
             let userInformation = getUserByUserName(mName)
-
+        
             if (userInformation.link != undefined) {
-                let link = userInformation.link
 
+                /*
+                * GET OR REFRESH USER.LINK.ACCESS IN USERS.JSON DATA FILE :
+                */
+                await spotify.getToken(req.user.uid); //! important
+
+                let link = userInformation.link
+            
                 if (link.access != undefined && link.access != "") {
 
                     // Get spotify username
                     let spotifyUsername = await spotify.getSpotifyUsername(link.access);
                     result.spotifyPseudo = spotifyUsername;
 
-                    // Get spotify device name and current music info
-                    let userPlayingSongAndDevice = await spotify.getUserPlayingSongInfoAndDevice(link.access);
-                    console.log(userPlayingSongAndDevice)
-                    if (userPlayingSongAndDevice != undefined && userPlayingSongAndDevice != '') {
-                        result.device = userPlayingSongAndDevice.device.name;
-                        result.currentAlbumTitle = userPlayingSongAndDevice.item.album.name;
-                        result.artist = userPlayingSongAndDevice.artists[0].name;
+                    // GET SPOTIFY DEVICE NAME
+                    const spotifyDevice = await spotify.getUserDeviceName(link.access);
+                    if(spotifyDevice.name && spotifyDevice.type)
+                        result.device = `${spotifyDevice.name} (${spotifyDevice.type})`;
+
+                    // GET CURRENT MUSIC PLAYING
+                    const userPlayingSong = await spotify.getUserPlayingSongInfo(link.access);
+                    if (userPlayingSong != undefined && userPlayingSong != '') {
+                        result.currentTitle = userPlayingSong.item.name;
+                        result.artist = userPlayingSong.item.artists[0].name;
+                        result.currentAlbumTitle = userPlayingSong.item.album.name;
+                    } else if (userPlayingSong === '') {
+                        result.currentTitle = "Aucune musique en cours d'écoute.";
                     }
                 }
             }
 
             listAllMembers.push(result);
-
-            const finalResult = ""
         };
-        return res.status(200).json(listAllMembers);
+
+        let finalResult = {
+            group_name: userGroup.name,
+            members: listAllMembers,
+        }
+        
+        return res.status(200).json(finalResult);
     }
+
+// Get the username with user uid
+module.exports.getUserWithUid = async (uid) => {
+    //const file = require('../users.json');
+    const file = require('../data/users.json');
+
+    const users = file.users;
+    const user = users.find(u => u.uid === uid);
+
+    if(user == undefined) {
+        return undefined;
+    }
+
+    return user;
+}
+
+module.exports.isUserChiefGroupController = async (groupName, userName) => {
+    const file = require('../data/users.json');
+    //const file = require(USER_JSON);
+
+    const groups = file.groups;
+    const group = groups.find(g => g.name === groupName);
+    
+    if(group != undefined && group.chief == userName) {
+        return true;
+    }
+
+    return false; 
+}
+
+function getUserByUid(uid) {
+    //const file = require('../users.json');
+    const file = require('../data/users.json');
+
+    const users = file.users;
+    const user = users.find(u => u.uid === uid);
+
+    if(user == undefined) {
+        return undefined;
+    }
+
+    return user;
+}
 
 // Create group
 function createGroup(newGroup) {
@@ -187,21 +245,6 @@ function isExistGroup(nameGroup) {
     }
 
     return true;    
-}
-
-// Get the username with user uid
-function getUserByUid(uid) {
-    //const file = require('../users.json');
-    const file = require('../data/users.json');
-
-    const users = file.users;
-    const user = users.find(u => u.uid === uid);
-
-    if(user == undefined) {
-        return undefined;
-    }
-
-    return user;
 }
 
 function getUserByUserName(username) {
