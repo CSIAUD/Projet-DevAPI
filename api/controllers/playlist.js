@@ -22,14 +22,11 @@ const file = '../api/data/users.json';
 module.exports.createPlaylistTracksFromMyself = async (req, res) => {
 
     // On récupère l'uid de l'utilisateur connecté
-    let access_token = await token.getToken("38f50a7a-c967-42a5-b7be-c10e85899b82");
+    let access_token = await token.getToken(req.user.uid);
 
     // 'user' peut demander la création d’une playlist sur son compte Spotify contenant les 10 musiques préférées* d’un autre Utilisateur (qui peut être lui-même) passé en paramètre.
     // Le 'user' passé en paramètre doit appartenir à notre projet (user connecté à Spotify)
     // * : https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-top-artists-and-tracks
-
-    // TEST local
-    // token = "";
 
     var options = {
         // url: 'https://api.spotify.com/v1/me/top/tracks',
@@ -44,25 +41,38 @@ module.exports.createPlaylistTracksFromMyself = async (req, res) => {
     axios.get('https://api.spotify.com/v1/me/top/tracks', options)
       .then(function (response) {
         console.log("NO ERROR");
-        return response;
+        console.log(response.data);
+
+        tracks = response.data.items;
+
+        let limit = 10;
+
+        playlist = [];
+        for (let i = 0 ; i <= limit ; i++) {
+            // playlist += i + ' ' + tracks[i]['name'] + ' | ';
+            playlist[i] = tracks[i]['name'];
+            // DEBUG
+            // console.log(playlist);
+        }
+        console.log('--------------------------');
+        console.log(playlist);
+
+        return tracks;
     })
     .catch(function (error) {
         console.log(error);
     })
-    // .finally(function () {
-    //     // always executed
-    // });
 
     // Création d'une playlist avec les données récupérées
     //"items": [ {} ],
 
-    // console.log(req);
+    // let limit = 10;
 
-    playlist = [];
-    // for (let playlist of data.body.items) {
-        // playlist += items[i];
-        // DEBUG
-        // console.log(playlist);
+    // playlist = [];
+    // for (let i = 0 ; i < limit ; i++) {
+    //     playlist += tracks[i];
+    //     // DEBUG
+    //     console.log(playlist);
     // }
 }
 

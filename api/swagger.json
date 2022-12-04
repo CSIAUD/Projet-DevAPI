@@ -201,8 +201,28 @@
     "/api/playlist/me/top/tracks": {
       "get": {
         "description": "",
-        "parameters": [],
-        "responses": {}
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Vous n'êtes pas authentifié(e)."
+          },
+          "403": {
+            "description": "Le token est invalide."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/api/spotify/refresh_token": {
