@@ -10,6 +10,7 @@ const axios = require('axios');
 const jwt = require("jsonwebtoken");
 
 const usersController = require('../controllers/users');
+const groupsController = require('../controllers/groups');
 
 var querystring = require('querystring');
 var request = require('request'); // "Request" library
@@ -132,7 +133,44 @@ module.exports.getSpotifyUsername = async (userSpotifyToken) => {
     .catch(async function (error) {
       return "ERROR : getSpotifyUsername";
     }) 
+}
+
+//Sync
+module.exports.synchronisation = async (req, res) => {
+  let uid = req.user.uid;
+
+  let user = await groupsController.getUserWithUid(uid);
+
+  if (user.group == undefined || user.group == "") {
+    return res.send("L'utilisateur n'a pas de groupe.");
   }
+
+  let isChiefOfGroup = await groupsController.isUserChiefGroupController(user.group, user.username);
+
+  if( isChiefOfGroup == false ) {
+    return res.send("L'utilisateur n'est pas le chef du groupe.");
+  }
+
+  if (user.link != undefined) {
+
+    /*
+    * GET OR REFRESH USER.LINK.ACCESS IN USERS.JSON DATA FILE :
+    */
+    await getToken(uid); //! important
+
+    let link = user.link
+
+    if (link.access != undefined && link.access != "") {
+      console.log("Chief linked spotify")
+    }
+
+  }
+
+
+  console.log(uid);
+
+  return res.send(user);
+}
   
   
 // Display user's play song : Title, Artist name, Album title
@@ -169,7 +207,7 @@ return axios.get('https://api.spotify.com/v1/me/player/devices', {
 }
 
 // Récupération d'un access_token valide de Spotify
-module.exports. getToken = async (uid) => {
+module.exports.getToken = async (uid) => {
     let user = usersController.findOneById(uid)
     try {
     if(await isLinked(uid)){

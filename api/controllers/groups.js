@@ -168,6 +168,49 @@ module.exports.listMembersOfGroup = async (req, res) => {
         return res.status(200).json(finalResult);
     }
 
+// Get the username with user uid
+module.exports.getUserWithUid = async (uid) => {
+    //const file = require('../users.json');
+    const file = require('../data/users.json');
+
+    const users = file.users;
+    const user = users.find(u => u.uid === uid);
+
+    if(user == undefined) {
+        return undefined;
+    }
+
+    return user;
+}
+
+module.exports.isUserChiefGroupController = async (groupName, userName) => {
+    const file = require('../data/users.json');
+    //const file = require(USER_JSON);
+
+    const groups = file.groups;
+    const group = groups.find(g => g.name === groupName);
+    
+    if(group != undefined && group.chief == userName) {
+        return true;
+    }
+
+    return false; 
+}
+
+function getUserByUid(uid) {
+    //const file = require('../users.json');
+    const file = require('../data/users.json');
+
+    const users = file.users;
+    const user = users.find(u => u.uid === uid);
+
+    if(user == undefined) {
+        return undefined;
+    }
+
+    return user;
+}
+
 // Create group
 function createGroup(newGroup) {
     const fs = require('fs');
@@ -202,21 +245,6 @@ function isExistGroup(nameGroup) {
     }
 
     return true;    
-}
-
-// Get the username with user uid
-function getUserByUid(uid) {
-    //const file = require('../users.json');
-    const file = require('../data/users.json');
-
-    const users = file.users;
-    const user = users.find(u => u.uid === uid);
-
-    if(user == undefined) {
-        return undefined;
-    }
-
-    return user;
 }
 
 function getUserByUserName(username) {
