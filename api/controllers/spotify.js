@@ -39,7 +39,7 @@ const link = async (req, res) => {
         return res.status(400).json("Ce compte a déjà été lié à Spotify.");
     } else { 
       // your application requests authorization
-      const scope = 'user-read-private user-read-email user-read-playback-state';
+      const scope = 'user-read-private user-read-email user-read-playback-state user-library-read';
 
       const url = 'https://accounts.spotify.com/authorize?' +
         querystring.stringify(
@@ -371,8 +371,8 @@ const getToken = async (uid) => {
             return access;
           })
           .catch(async (err) => {
-            err = err.response.data.error;
-            if(err.status == 401) {
+            console.log(err.response.status)
+            if(err.response.status == 403 || err.response.status == 401) {
               var refresh_token = refresh;
     
               const data = qs.stringify({
