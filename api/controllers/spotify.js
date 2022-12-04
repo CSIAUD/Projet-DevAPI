@@ -292,22 +292,47 @@ module.exports.synchronisation = async (req, res) => {
 
     /*
     * GET OR REFRESH USER.LINK.ACCESS IN USERS.JSON DATA FILE :
-    */
-    await getTokenFunction(uid); //! important
+    */    
+    await this.getToken(uid)
 
     let link = user.link
 
     // Check if chief is connected to Spotify
     if (link.access != undefined && link.access != "") {
     
-      let deviceInformations = this.getUserDeviceName(link.access);
-
+      let deviceInformations = await this.getUserDeviceName(link.access);
+      console.log("device :")
+      console.log(deviceInformations);
       // Check if chief device is active
       if (deviceInformations.is_active) {
         // Get list of members
 
         let listMembers = await groupsController.listMembersOfGroup(req, res);
+        console.log("liste :")
         console.log(listMembers);
+
+        // For each member of the group
+        for (let index = 0; index < listMembers.length; index++) {
+          let member = listMembers[index];
+
+          memberInformation = groupsController.getUserWithUserName(member.memberName);
+
+          // Check if member has link spotify
+          if(memberInformation.link.access != undefined && memberInformation.link.access != "") {
+            axios.put('https://api.spotify.com/v1/me/player', {
+              headers : {
+              Authorization : "Bearer " + userSpotifyToken
+              },
+              devices_ids : [ member.device.split(' ')[0] ]
+            })
+            .then(function (response) {      
+                return response;
+            })
+            .catch(async function (error) {
+                return "ERROR : Transfer playback";
+            })
+          }
+        }
 
       }
     }
@@ -328,7 +353,7 @@ module.exports.getUserPlayingSongInfo = async (userSpotifyToken) => {
       }
   }).then((responseCurrentPlaying) => {
     // If user is currently playing
-    if (responseCurrentPlaying.data.device.is_active) {
+    if (responseCurrentPlaying.data.device.is_active) {      
       return responseCurrentPlaying;
     }
     
@@ -345,8 +370,9 @@ module.exports.getUserDeviceName = async (userSpotifyToken) => {
       Authorization : "Bearer " + userSpotifyToken
       }
   })
-  .then(function (response) {
+  .then(function (response) {      
       return response.data.devices[0];
+      //return response.data.devices[0];
   })
   .catch(async function (error) {
       return "ERROR : getUserDeviceName";

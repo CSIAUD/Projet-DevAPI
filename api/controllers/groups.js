@@ -141,13 +141,13 @@ module.exports.listMembersOfGroup = async (req, res) => {
                     result.spotifyPseudo = spotifyUsername;
 
                     // GET SPOTIFY DEVICE NAME
-                    const spotifyDevice = await spotify.getUserDeviceName(link.access);
+                    const spotifyDevice = await spotify.getUserDeviceName(link.access);                    
                     if(spotifyDevice.name && spotifyDevice.type)
-                        result.device = `${spotifyDevice.name} (${spotifyDevice.type})`;
+                        result.device = `${spotifyDevice.id} ${spotifyDevice.name} (${spotifyDevice.type})`;
 
                     // GET CURRENT MUSIC PLAYING
-                    const userPlayingSong = await spotify.getUserPlayingSongInfo(link.access);
-                    if (userPlayingSong != undefined && userPlayingSong != '') {
+                    const userPlayingSong = await spotify.getUserPlayingSongInfo(link.access);                    
+                    if (userPlayingSong != undefined && userPlayingSong != '' && !userPlayingSong.includes("ERROR")) {
                         result.currentTitle = userPlayingSong.item.name;
                         result.artist = userPlayingSong.item.artists[0].name;
                         result.currentAlbumTitle = userPlayingSong.item.album.name;
@@ -175,6 +175,21 @@ module.exports.getUserWithUid = async (uid) => {
 
     const users = file.users;
     const user = users.find(u => u.uid === uid);
+
+    if(user == undefined) {
+        return undefined;
+    }
+
+    return user;
+}
+
+// Get the username with user username
+module.exports.getUserWithUserName = async (username) => {
+    //const file = require('../users.json');
+    const file = require('../data/users.json');
+
+    const users = file.users;
+    const user = users.find(u => u.username === username);
 
     if(user == undefined) {
         return undefined;
