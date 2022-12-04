@@ -379,6 +379,8 @@ getTokenFunction = async(uid) => {
             }
           })
           .then((resp) => {
+            let token = resp.data.access_token;
+            setAcessToken(token);
             return resp.data.access_token
           })
           .catch((err) => {
