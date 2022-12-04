@@ -109,7 +109,7 @@ module.exports.callback = async (req, res) => {
     axios.post(authOptions.url, authOptions.form, {headers: authOptions.headers, state: state})
       .then(async response => { 
           if(await setTokens(response)){
-            returnres.send("Votre compte a été lié à Spotify ✔️");
+            return res.send("Votre compte a été lié à Spotify ✔️");
           }else{
             res.send("⚠️ Une erreur est survenue lors de la liaison à Spotify.");
           }

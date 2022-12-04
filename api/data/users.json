@@ -24,7 +24,11 @@
     {
       "uid": "1bf11ac6-f108-4833-ab51-db59b3cc43a9",
       "username": "test",
-      "password": "$2b$10$wuUNdhNRoCZN2QP78tI27e0MDjT3y5ntiT5mnWDjqYz3GINjmOO4C"
+      "password": "$2b$10$wuUNdhNRoCZN2QP78tI27e0MDjT3y5ntiT5mnWDjqYz3GINjmOO4C",
+      "link": {
+        "access": "BQANxV0z6SBWfjKht3q-N6bnDgQomfXYTx9BFK9N_RfTBgZROHMwxquBbaVSIar-yEZzOAvoz4lFICHKBjKNA7T4WulbGrGRZr-oMY-a8VpdPkDSQi5jryve21i7ONau9Ik-YR1cB148Mnhwssry0OjcDiu2pdWEWWYxPQj3rycg2b0kXQ9fIyX55fHOV8DC",
+        "refresh": "AQDw-TBuiMYe299cmOBL9Rs-woM0hl31J1Nmkaq0UJzwz_wnjwwxRbgVWcndNPCUf3t622Fzwmkl6X__oUuCLCpemvT8t6xx6NGN2kU75H5F48kPJXgl2Baxek10gAIti6Q"
+      }
     }
   ],
   "groups": [

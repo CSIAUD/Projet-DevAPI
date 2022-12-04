@@ -1,5 +1,4 @@
 const token = require('../controllers/spotify.js'); // Import du controller
-token.getToken
 
 const axios = require('axios');
 
@@ -22,37 +21,50 @@ const file = '../api/data/users.json';
 // Based on 'me' and 'tracks'
 module.exports.createPlaylistTracksFromMyself = async (req, res) => {
 
+    let access = token.getToken ;
+
     // 'user' peut demander la création d’une playlist sur son compte Spotify contenant les 10 musiques préférées* d’un autre Utilisateur (qui peut être lui-même) passé en paramètre.
     // Le 'user' passé en paramètre doit appartenir à notre projet (user connecté à Spotify)
     // * : https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-top-artists-and-tracks
 
+    // TEST local
+    // token = "";
+
     var options = {
         // url: 'https://api.spotify.com/v1/me/top/tracks',
-        headers: { 'Authorization' : 'Bearer ' + token }
+        headers: {
+            'Authorization' : 'Bearer ' + access,
+            'accept-encoding' : 'null'
+        }
     };
 
     // Récupération des données de l'URL
     // AXIOS :
     axios.get('https://api.spotify.com/v1/me/top/tracks', options)
       .then(function (response) {
-        console.log(response.data);
+        console.log(response);
         return response;
     })
     .catch(function (error) {
         console.log(error);
     })
-    .finally(function () {
-        // always executed
-    });
+    // .finally(function () {
+    //     // always executed
+    // });
 
     // Création d'une playlist avec les données récupérées
     //"items": [ {} ],
     console.log(req);
 
     playlist = [];
-    for (let i = 0; i < 10; i++) {
+    // for (let playlist of data.body.items) {
         // playlist += items[i];
         // DEBUG
         // console.log(playlist);
-    }
+    // }
+}
+
+// Based on 'someone' and 'tracks'
+module.exports.createPlaylistTracksFromSomeone = async (req, res) => {
+
 }
