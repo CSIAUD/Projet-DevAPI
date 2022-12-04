@@ -20,9 +20,9 @@ const file = '../api/data/users.json';
 
 // Based on 'me' and 'tracks'
 module.exports.createPlaylistTracksFromMyself = async (req, res) => {
-    let access_token = await token.getToken("38f50a7a-c967-42a5-b7be-c10e85899b82");
 
-    let access = token.getToken ;
+    // On récupère l'uid de l'utilisateur connecté
+    let access_token = await token.getToken("38f50a7a-c967-42a5-b7be-c10e85899b82");
 
     // 'user' peut demander la création d’une playlist sur son compte Spotify contenant les 10 musiques préférées* d’un autre Utilisateur (qui peut être lui-même) passé en paramètre.
     // Le 'user' passé en paramètre doit appartenir à notre projet (user connecté à Spotify)
