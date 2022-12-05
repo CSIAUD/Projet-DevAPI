@@ -101,7 +101,8 @@ const callback = async (req, res) => {
 const getSpotifyUsername = async (userSpotifyToken) => {
     return axios.get('https://api.spotify.com/v1/me/', {
         headers : {
-            Authorization : "Bearer " + userSpotifyToken
+            Authorization : "Bearer " + userSpotifyToken,
+            'accept-encoding': 'null'
         }
     })
     .then(function (response) {   
@@ -117,7 +118,8 @@ const getSpotifyUsername = async (userSpotifyToken) => {
 const getUserPlayingSongInfo = async (userSpotifyToken) => {
 return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
     headers : {
-    Authorization : "Bearer " + userSpotifyToken
+        Authorization : "Bearer " + userSpotifyToken,
+        'accept-encoding': 'null'
     }
 })
 .then(function (response) {
@@ -132,7 +134,8 @@ return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
 const getUserDeviceName = async (userSpotifyToken) => {
 return axios.get('https://api.spotify.com/v1/me/player/devices', {
     headers : {
-    Authorization : "Bearer " + userSpotifyToken
+        Authorization : "Bearer " + userSpotifyToken,
+        'accept-encoding': 'null'
     }
 })
 .then(function (response) {
@@ -186,18 +189,22 @@ const profile = async (req, res) => {
         headers: headers
     })
     .then((resp) => { 
+        let count = 0;
         let str = "";
         
         total = resp.data.total;
         for (let item of resp.data.items) {
-            str += item.track.id;
-            actual++;
+          str += item.track.id;
+          if(((actual + count) % 100) + 1 != 0) 
+            str += ",";
+          actual++;
+          count++;
         }
         return str;
-    })
+      })
     .catch((err) => { 
         console.log("pas OK Tracks")
-        console.log(err.response.data)
+        console.log(err)
         return false;
     })
   
