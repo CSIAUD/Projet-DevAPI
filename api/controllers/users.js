@@ -92,5 +92,6 @@ const findOneById = (uid) => {
 
 module.exports = { 
     register, 
-    findOneById 
+    findOne,
+    findOneById
 }

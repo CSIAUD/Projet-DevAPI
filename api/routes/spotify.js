@@ -1,11 +1,14 @@
 const router = require("express").Router();
-const spotifyController = require("../controllers/spotify.js");
 const middleWare = require('../controllers/middleware.js')
+const spotifyController = require("../controllers/spotify.js");
+const playlistsController = require("../controllers/playlists.js");
+const synchronizeController = require("../controllers/synchronize.js");
 
 router.get("/callback", spotifyController.callback);
 router.get("/link", middleWare.verify ,spotifyController.link);
 router.get("/me", middleWare.verify ,spotifyController.profile);
-router.put("/sync", middleWare.verify, spotifyController.synchronisation);
+router.put("/synchronize", middleWare.verify, synchronizeController.synchronize);
+router.post("/playlist", middleWare.verify, playlistsController.createPlaylist);
 
 module.exports = router
 

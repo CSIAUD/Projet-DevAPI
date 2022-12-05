@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-module.exports.getToken = async (req, res) => {
+const getToken = async (req, res) => {
     /* 
         #swagger.summary = 'Connecter un utilisateur (FT-2)'
         #swagger.description = "Génère un JSON Web Token pour l'authentification."
@@ -63,4 +63,6 @@ const findOne = (username) => {
         throw 'Unable to search users list.'
     }
 }
+
+module.exports = { getToken, findOne };
 
