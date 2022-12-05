@@ -30,80 +30,37 @@ module.exports.createPlaylistTracksFromMyself = async (req, res) => {
         }
     };
 
-    // Récupération des données de l'URL
-    // AXIOS :
+    // On récupère les 10 meilleurs titres de l'utilisateur
     axios.get('https://api.spotify.com/v1/me/top/tracks', options)
-      .then(function (response) {
+    .then(function (response) {
         console.log("NO ERROR Tracks");
-        // console.log(response.data);
+        console.log(response.data);
 
+        // "items": [ {} ]
         tracks = response.data.items;
-
-        // Création d'une playlist avec les données récupérées
-        //"items": [ {} ],
 
         let limit = 10;
 
-        playlist = [];
+        tracksList = [];
         for (let i = 0 ; i <= limit ; i++) {
-            // playlist += i + ' ' + tracks[i]['name'] + ' | ';
-            playlist[i] = tracks[i]['name'];
-            // DEBUG
-            // console.log(playlist);
+            // tracksList += i + ' ' + tracks[i]['name'] + ' | ';
+            tracksList[i] = tracks[i]['name'];
         }
+
         console.log('--------------------------');
-        console.log(playlist);
+        console.log(tracksList);
+        console.log('--------------------------');
 
-        // return tracks;
+        // On récupère l'id de l'utilisateur
+        getMyId(access_token);
 
-        /* getMyId(); */
-        // Récupération des données de l'URL
-        // AXIOS :
-        axios.get('https://api.spotify.com/v1/me', options)
-        .then(function (response) {
-            console.log(response.data.id);
-            // exemple : suprax33
-            console.log("NO ERROR getMyId");
-            userUID = response.data.id;
-            // return userUID;
+        // On crée la playlist
+        // createPlaylist(access_token, userID);
 
-            /* createPlaylist(); */
-            // var options2 = {
-            //     name: 'Playlist YSpotify',
-            //     public: true,
-            //     description: 'playlist crée depuis l\'API YSpotify',
-            //     headers: {
-            //         'Authorization' : 'Bearer ' + access_token
-            //     }
-            // };
-
-            var data = {
-                name: "Playlist YSpotify", public: true, description: 'playlist crée depuis l\'API YSpotify'
-            },
-            headers ={
-                'Authorization': 'Bearer ' + access_token,
-                'Content-Type': 'application/json'
-            };
-        
-            axios.post('https://api.spotify.com/v1/users/' + userUID + '/playlists', data, headers)
-            .then(function (response) {
-                console.log(response);
-                console.log('NO ERROR CreatePlaylist');
-            })
-            .catch(function (error) {
-                console.log(error);
-                console.log('ERROR CreatePlaylist');
-            });
-        })
-        .catch(function (error) {
-            console.log(error);
-            console.log('ERROR getMyId');
-        })
-      
     })
     .catch(function (error) {
         console.log(error);
-        console.log('ERROR');
+        console.log('ERROR fonction principale');
     })
 }
 
@@ -113,7 +70,7 @@ module.exports.createPlaylistTracksFromSomeone = async (req, res) => {
 }
 
 // Récupère l'id de l'utilisateur
-getMyId = async (req, res) => {
+getMyId = async (access_token) => {
 
     // https://api.spotify.com/v1/me
     var options = {
@@ -129,44 +86,67 @@ getMyId = async (req, res) => {
     .then(function (response) {
         console.log(response.data.id);
         // exemple : suprax33
-        console.log("NO ERROR");
+        console.log("NO ERROR getMyId");
+        userID = response.data.id;
+        console.log(access_token);
+        // return userID;
+        createPlaylist(access_token, userID);
     })
     .catch(function (error) {
         console.log(error);
-        console.log('ERROR');
+        console.log('ERROR getMyId');
     })
 
 }
 
 // Create a playlist for a Spotify user. (The playlist will be empty until you add tracks.)
-module.exports.createPlaylist = async (req, res) => {
 
-    // POST /users/{user_id}/playlists
+const createPlaylist = async (req, res) => {
+    /*  
+        #swagger.summary = "Création de playlists (FT-8)"
+        #swagger.description = "Crée une playlist."
+    */
 
-    // user_id string
-    // The user's Spotify user ID.
-    // Example value: "smedjan"
+    let uid = req.user.uid;
+    let user = getUserByUid(uid);
 
-    var options = {
-        name: 'Playlist YSpotify',
-        boolean: true,
-        description: 'playlist crée depuis l\'API YSpotify',
+    /*
+    * GET OR REFRESH USER.LINK.ACCESS IN USERS.JSON DATA FILE :
+    */  
+    await getToken(uid); //! important
+
+    if(!user.link)
+        return res.status(400).json("L'utilisateur n'a pas lié de compte Spotify.");
+    
+    let link = user.link
+
+    if(!link.access || link.access === "")
+        return res.status(403).json("Le token Spotify (link.access) n'est pas défini (null, undefined, empty string).");
+
+    // 1. PLAYLIST CREATION
+    const data = {
+        playlistName: req.body.playlistName,
+        user: req.body.user
+    }
+
+    await axios({
+        method: 'post',
+        url: `https://api.spotify.com/v1/me/playlists`,
         headers: { 
-            'Authorization' : 'Bearer ' + access_token,
+            'Authorization': 'Bearer ' + link.access,
             'accept-encoding': 'null'
+        },
+        data: {
+            'name': data.playlistName,
+            "description": "Your new awesome playlist.",
+            "public": true
         }
-    };
-
-    axios.post('/users/{user_id}/playlists', options)
-      .then(function (response) {
-        console.log(response);
-        console.log('NO ERROR');
+      })
+    .then((response) => {
+        return res.status(200).json(response.data);
     })
-    .catch(function (error) {
-        console.log(error);
-        console.log('ERROR');
-    });
-
+    .catch((err) => {
+        console.log(err);
+        return res.status(500).json("Une erreur inattendue est survenue lors de la création de la playlist.");
+    })
 }
-
-// module.exports = { getMyId };
