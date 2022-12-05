@@ -10,13 +10,7 @@ var redirect_uri = process.env.REDIRECT_URI;
 const file = '../api/data/users.json';
 
 
-// FT-8 Playlist | /me/top/{type}
-/*
-  {type}
-  The type of entity to return. Valid values: 'artists' or 'tracks'
-  type string
-  Example value: "artists"
-*/
+// FT-8 Playlist | /me/top/tracks
 
 // Based on 'me' and 'tracks'
 module.exports.createPlaylistTracksFromMyself = async (req, res) => {
@@ -40,10 +34,13 @@ module.exports.createPlaylistTracksFromMyself = async (req, res) => {
     // AXIOS :
     axios.get('https://api.spotify.com/v1/me/top/tracks', options)
       .then(function (response) {
-        console.log("NO ERROR");
-        console.log(response.data);
+        console.log("NO ERROR Tracks");
+        // console.log(response.data);
 
         tracks = response.data.items;
+
+        // Création d'une playlist avec les données récupérées
+        //"items": [ {} ],
 
         let limit = 10;
 
@@ -57,26 +54,119 @@ module.exports.createPlaylistTracksFromMyself = async (req, res) => {
         console.log('--------------------------');
         console.log(playlist);
 
-        return tracks;
+        // return tracks;
+
+        /* getMyId(); */
+        // Récupération des données de l'URL
+        // AXIOS :
+        axios.get('https://api.spotify.com/v1/me', options)
+        .then(function (response) {
+            console.log(response.data.id);
+            // exemple : suprax33
+            console.log("NO ERROR getMyId");
+            userUID = response.data.id;
+            // return userUID;
+
+            /* createPlaylist(); */
+            // var options2 = {
+            //     name: 'Playlist YSpotify',
+            //     public: true,
+            //     description: 'playlist crée depuis l\'API YSpotify',
+            //     headers: {
+            //         'Authorization' : 'Bearer ' + access_token
+            //     }
+            // };
+
+            var data = {
+                name: "Playlist YSpotify", public: true, description: 'playlist crée depuis l\'API YSpotify'
+            },
+            headers ={
+                'Authorization': 'Bearer ' + access_token,
+                'Content-Type': 'application/json'
+            };
+        
+            axios.post('https://api.spotify.com/v1/users/' + userUID + '/playlists', data, headers)
+            .then(function (response) {
+                console.log(response);
+                console.log('NO ERROR CreatePlaylist');
+            })
+            .catch(function (error) {
+                console.log(error);
+                console.log('ERROR CreatePlaylist');
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+            console.log('ERROR getMyId');
+        })
+      
     })
     .catch(function (error) {
         console.log(error);
+        console.log('ERROR');
     })
-
-    // Création d'une playlist avec les données récupérées
-    //"items": [ {} ],
-
-    // let limit = 10;
-
-    // playlist = [];
-    // for (let i = 0 ; i < limit ; i++) {
-    //     playlist += tracks[i];
-    //     // DEBUG
-    //     console.log(playlist);
-    // }
 }
 
 // Based on 'someone' and 'tracks'
 module.exports.createPlaylistTracksFromSomeone = async (req, res) => {
 
 }
+
+// Récupère l'id de l'utilisateur
+getMyId = async (req, res) => {
+
+    // https://api.spotify.com/v1/me
+    var options = {
+        headers: { 
+            'Authorization' : 'Bearer ' + access_token,
+            'accept-encoding': 'null'
+        }
+    };
+
+    // Récupération des données de l'URL
+    // AXIOS :
+    axios.get('https://api.spotify.com/v1/me', options)
+    .then(function (response) {
+        console.log(response.data.id);
+        // exemple : suprax33
+        console.log("NO ERROR");
+    })
+    .catch(function (error) {
+        console.log(error);
+        console.log('ERROR');
+    })
+
+}
+
+// Create a playlist for a Spotify user. (The playlist will be empty until you add tracks.)
+module.exports.createPlaylist = async (req, res) => {
+
+    // POST /users/{user_id}/playlists
+
+    // user_id string
+    // The user's Spotify user ID.
+    // Example value: "smedjan"
+
+    var options = {
+        name: 'Playlist YSpotify',
+        boolean: true,
+        description: 'playlist crée depuis l\'API YSpotify',
+        headers: { 
+            'Authorization' : 'Bearer ' + access_token,
+            'accept-encoding': 'null'
+        }
+    };
+
+    axios.post('/users/{user_id}/playlists', options)
+      .then(function (response) {
+        console.log(response);
+        console.log('NO ERROR');
+    })
+    .catch(function (error) {
+        console.log(error);
+        console.log('ERROR');
+    });
+
+}
+
+// module.exports = { getMyId };
