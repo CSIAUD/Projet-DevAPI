@@ -68,7 +68,7 @@ module.exports.link = async (req, res) => {
         return res.status(400).json("Ce compte a déjà été lié à Spotify.");
     } else { 
       // your application requests authorization
-      const scope = 'user-read-private user-read-email user-read-playback-state user-library-read';
+      const scope = 'user-read-private user-read-email user-read-playback-state user-library-read user-top-read';
 
       const url = 'https://accounts.spotify.com/authorize?' +
         querystring.stringify(
@@ -88,7 +88,7 @@ module.exports.link = async (req, res) => {
 
 // Récupération d'un access_token valide de Spotify
 module.exports.getToken = async (uid) => {
-  getTokenFunction(uid);
+  return await getTokenFunction(uid);
 }
 
 // Traitement de la connexion avec Spotify
@@ -96,7 +96,6 @@ module.exports.callback = async (req, res) => {
   //  console.log(req.query);
    
    const code = req.query.code || null;
-   console.log(code)
    const client_secret = process.env.CLIENT_SECRET
    const state = req.query.state || null;
  
@@ -216,7 +215,7 @@ module.exports.profile = async (req, res) => {
       }
     }
 
-    console.log("total : ", total, "\nactual : ", actual)
+    // console.log("total : ", total, "\nactual : ", actual)
 
     if(ids != "") idLists.push(ids.substring(0, ids.length - 1));
     
@@ -512,3 +511,7 @@ isLinked = async (uid) => {
       console.log(err);
   } 
 }
+
+module.exports = { 
+  islinked
+} 
