@@ -20,7 +20,7 @@ const file = '../api/data/users.json';
 
 // Based on 'me' and 'tracks'
 module.exports.createPlaylistTracksFromMyself = async (req, res) => {
-    let access_token = await token.getToken("38f50a7a-c967-42a5-b7be-c10e85899b82");
+    let access_token = await token.getToken(req.uesr.uid);
 
     let access = token.getToken ;
 
