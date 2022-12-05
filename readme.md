@@ -3,9 +3,9 @@
 
 ## <strong>L'équipe</strong> :
 
-- LEPINAY Nicolas (FT-1 & FT-2)
+- LEPINAY Nicolas (FT-1, FT-2 & Swagger UI Doc)
 - SIAUD Cyprien (FT-3 & FT-6)
-- KIM Injin (FT-4 & FT-5 & FT-7)
+- KIM Injin (FT-4, FT-5 & FT-7)
 - PALMIERI Matéo (FT-8)
 <br><br>
 
