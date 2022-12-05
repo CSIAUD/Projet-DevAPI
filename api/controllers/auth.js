@@ -59,7 +59,7 @@ const findOne = (username) => {
         const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
         return user;
     } catch(err) {
-        console.log(err);
+        console.log(err.response.data);
         throw 'Unable to search users list.'
     }
 }

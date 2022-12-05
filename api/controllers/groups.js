@@ -124,37 +124,35 @@ const listMembersOfGroup = async (req, res) => {
             // Check if user linked access is empty or not
             let userInformation = getUserByUserName(mName)
 
-            if (userInformation.link != undefined) {
+            if(!await spotify.isLinked(userInformation.uid))
+                return res.send("Utilisateur non lié à spotify")
 
-                /*
-                * GET OR REFRESH USER.LINK.ACCESS IN USERS.JSON DATA FILE :
-                */
-                await spotify.getToken(req.user.uid); //! important
+            /*
+            * GET OR REFRESH USER.LINK.ACCESS IN USERS.JSON DATA FILE :
+            */
+            let access_token = await spotify.getToken(userInformation.uid); //! important
 
-                let link = userInformation.link
+            let link = userInformation.link
 
-                if (link.access != undefined && link.access != "") {
 
-                    // GET SPOTIFY USERNAME
-                    const spotifyUsername = await spotify.getSpotifyUsername(link.access);
-                    result.spotifyPseudo = spotifyUsername;
+                // GET SPOTIFY USERNAME
+                const spotifyUsername = await spotify.getSpotifyUsername(access_token);
+                result.spotifyPseudo = spotifyUsername;
 
-                    // GET SPOTIFY DEVICE NAME
-                    const spotifyDevice = await spotify.getUserDeviceName(link.access);
-                    if(spotifyDevice?.name && spotifyDevice?.type)
-                        result.device = `${spotifyDevice?.name} (${spotifyDevice?.type})`;
+                // GET SPOTIFY DEVICE NAME
+                const spotifyDevice = await spotify.getUserDeviceName(access_token);
+                if(spotifyDevice?.name && spotifyDevice?.type)
+                    result.device = `${spotifyDevice?.name} (${spotifyDevice?.type})`;
 
-                    // GET CURRENT MUSIC PLAYING
-                    const userPlayingSong = await spotify.getUserPlayingSongInfo(link.access);
-                    if (userPlayingSong != undefined && userPlayingSong != '') {
-                        result.currentTitle = userPlayingSong?.item?.name;
-                        result.artist = userPlayingSong?.item?.artists[0]?.name;
-                        result.currentAlbumTitle = userPlayingSong?.item?.album?.name;
-                    } else if (userPlayingSong === '') {
-                        result.currentTitle = "Aucune musique en cours d'écoute.";
-                    }
+                // GET CURRENT MUSIC PLAYING
+                const userPlayingSong = await spotify.getUserPlayingSongInfo(access_token);
+                if (userPlayingSong != undefined && userPlayingSong != '') {
+                    result.currentTitle = userPlayingSong?.item?.name;
+                    result.artist = userPlayingSong?.item?.artists[0]?.name;
+                    result.currentAlbumTitle = userPlayingSong?.item?.album?.name;
+                } else if (userPlayingSong === '') {
+                    result.currentTitle = "Aucune musique en cours d'écoute.";
                 }
-            }
 
             listAllMembers.push(result);
         };
@@ -164,7 +162,7 @@ const listMembersOfGroup = async (req, res) => {
             members: listAllMembers,
         }
         
-        return res.status(200).json(finalResult);
+        return finalResult;
 }
 
 // Create group

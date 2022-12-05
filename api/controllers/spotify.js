@@ -47,7 +47,8 @@ const link = async (req, res) => {
         'playlist-read-private', 
         'playlist-read-collaborative', 
         'playlist-modify-private', 
-        'playlist-modify-public'
+        'playlist-modify-public',
+        'user-modify-playback-state' // synchronisation
       ];
 
       const scope = scopeArray.join(' ');
@@ -120,10 +121,10 @@ const getSpotifyUsername = async (userSpotifyToken) => {
         return response.data.display_name;
     })
     .catch(async function (error) {
-        console.log(error)
+        console.log(error.response.data)
         return "ERROR : getSpotifyUsername";
     }) 
-  }
+}
   
 // Display user's play song : Title, Artist name, Album title
 const getUserPlayingSongInfo = async (userSpotifyToken) => {
@@ -143,19 +144,20 @@ return axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
 }
   
 const getUserDeviceName = async (userSpotifyToken) => {
-return axios.get('https://api.spotify.com/v1/me/player/devices', {
-    headers : {
-        Authorization : "Bearer " + userSpotifyToken,
-        'accept-encoding': 'null'
-    }
-})
-.then(function (response) {
-    return response.data.devices[0];
-})
-.catch(async function (error) {
-    console.log(error);
-    return "ERROR : getUserDeviceName";
-})
+  return await axios.get('https://api.spotify.com/v1/me/player/devices', {
+      headers : {
+          "Authorization" : "Bearer " + userSpotifyToken,
+          'accept-encoding': 'null'
+      }
+  })
+  .then(function (response) {
+    // console.log(response.data.devices)
+      return response.data.devices;
+  })
+  .catch(async function (error) {
+      console.log(error.response.data);
+      return "ERROR : getUserDeviceName";
+  })
 }
 
 // Traitement de la connexion avec Spotify
@@ -240,7 +242,7 @@ const profile = async (req, res) => {
         .catch((err) => { 
           console.log("pas OK Tracks 2")
           console.log(err)
-          // console.log(err.response.data)
+          console.log(err.response.data)
         })
         actual += datas[1];
         ids += datas[0];
@@ -300,7 +302,7 @@ const getToken = async (uid) => {
           let access = user.link.access;
           let refresh = user.link.refresh;
           
-          return axios.get('https://api.spotify.com/v1/me', {
+          let respToken = await axios.get('https://api.spotify.com/v1/me', {
             headers: {
               'Authorization': 'Bearer ' + access,
               "Accept": "application/json",
@@ -312,38 +314,40 @@ const getToken = async (uid) => {
             return access;
           })
           .catch(async (err) => {
-            console.log(err.response.status)
-            if(err.response.status == 403 || err.response.status == 401) {
-              var refresh_token = refresh;
-    
-              const data = qs.stringify({
-                'grant_type':'refresh_token',
-                'refresh_token': refresh_token
-              });
+            console.log(err.response.data)
+            return false;
+          })
+          if(respToken)
+            return respToken;
+          console.log("Bad token")
+          var refresh_token = refresh;
 
-              return await axios.post('https://accounts.spotify.com/api/token', data, {
-                headers: { 
-                  'Authorization': `Basic ${(new Buffer.from(client_id + ':' + client_secret).toString('base64'))}`,
-                  'Content-Type': 'application/x-www-form-urlencoded',
-                  "accept-encoding": 'null'
-                }
-              })
-              .then((resp) => {
-                let token = resp.data.access_token;
-                setAcessToken(uid, token);
-                return token;
-              })
-              .catch((err) => {
-                console.log(err)
-                return false;
-              })
+          const data = qs.stringify({
+            'grant_type':'refresh_token',
+            'refresh_token': refresh_token
+          });
+
+          return await axios.post('https://accounts.spotify.com/api/token', data, {
+            headers: { 
+              'Authorization': `Basic ${(new Buffer.from(client_id + ':' + client_secret).toString('base64'))}`,
+              'Content-Type': 'application/x-www-form-urlencoded',
+              "accept-encoding": 'null'
             }
+          })
+          .then((resp) => {
+            let token = resp.data.access_token;
+            setAcessToken(uid, token);
+            return token;
+          })
+          .catch((err) => {
+            console.log(err)
+            return false;
           })
         } else if (!linked) { 
           return false;
         }
     } catch(err) {
-        console.log(err.response);
+      console.log(err.response);
     }
 }
 

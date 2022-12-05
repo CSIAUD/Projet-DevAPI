@@ -4,9 +4,8 @@
       "uid": "d29183fc-d82e-41b6-8b6a-4251a1dc432d",
       "username": "Nicolas",
       "password": "$2b$10$uxE3LlEhiG8dOI616Dq1xOuOSUa7xp1IKXgdE/61pwD3Bs3yDClvO",
-      "group": "MonGroupe",
       "link": {
-        "access": "BQAzQzPvlVUOdT7uUjGt9KTQcNdCl0ACRa0_mb74SUos1qydWG64z9CcZ_-B9L7QOmn7ovwljOLfpfD2illIVzFNVSNqvcm1g33iwhefO0jh5R8dPE4MCRMwx4jf6snGSj8tHJnKOz8I7yAgKA2VHy5Z1pm87lGudvsLtSPJZJgmXxH5EeJwjT5dbKKbXOE6oQGy2CyauQgMt-SCEKKgYH-DkZ1Ve-IIEnqWOpV1PDK6giGwbTlE4BtBNDykpZ48ZFQjLVXQOTWwTdHMqbl-pIFrheciyC6884lxiGao2Zgn2sE",
+        "access": "BQABH8uD0sZddhRsaMRilMVbwb6ifFenOBu6RN-WkMKvZMHW7oDKfqbxi4gEc3O60m5RiYERdSUkHcYDFVmJqg8UHUA-WB2OKJSqra0txrt4Rf0INME_V_0BYDnKo4to3viDK03ikrCCcyxOyyvCVjmmIOAu1g0PHNyjI2e9EqTIccW9KROcbMzJUNF6gcn7prNgGaUHY93DSJ14Q5fZdvTQBpvP5w7J0c0YZipQzNZF_6GlazCmF39kZFpPsJ9XO-jxGggXIA0uANvtSXLgphqsWxPrqKQgH8Mbnz6Hz16jS3c",
         "refresh": "AQC6vHGURu7WlFoobBlRsW3oAb9mKSCde8Hee0QlzyHn7gB2rEs5dpvEZ-JbfcaI-CIPSmhVDd9mFBafqGrUpxVN3fz1Y_Lc2bQMhPmtx9ZT-aukUSkK1epuLZt-wVR4PXA"
       }
     },
@@ -20,15 +19,30 @@
       "uid": "38f50a7a-c967-42a5-b7be-c10e85899b82",
       "username": "Cyp",
       "password": "$2b$10$EUQ6qvE3sRd8tTFBuK8MXutbz.hnu0AT7rPkuc6ifk8Nld4Q0eicq",
-      "group": "NewGroup"
+      "group": "ZeBest",
+      "link": {
+        "access": "BQDenbSmPWhjSPqipK_ir8x8GTGWMiLTX4Q9u4_rndkhsnxO5cSLvwd0QzE4F3xnZvH_Wr-Mu3RlrCiqK071eywaDxltuTMaCK4NY63vEutsASmlmQ1o9bqcxKn0gI63_chccUV4TgEu17OF4ejhrIf0MA5ytcwGB3mm8_Xj7m-CHYb97yLxfzbWN6P2hE0LsCM-qYX0plyjjpBf1IolCmd-YbrDCWMWcE6J4Hqb4nuQjxYN3aDmxSckHtlrHZr6SLb22JOg2Epoo5pHZNvt4gjNbP0dxSDLkOOu7wq7Q662zcbWYms",
+        "refresh": "AQD_u_UpVyT6EH1vleIZC_Lngqx6hvKzcQtDF80lKg3h2AgpyxvdSjvZrYM3HvemvzjZsI7xCHYSTW8d-zgWtrj9LDVRHAYu22jEtWKT-5A-3ouEN4ENe3SN5N5E1JZx39g"
+      }
+    },
+    {
+      "uid": "f355c906-e018-4e6b-a706-d198632cd0f3",
+      "username": "test",
+      "password": "$2b$10$/DkxL6.4K7Xmy/JuRmQir.BNNG/8IiuDBlfxR/hRJnex75.cj1cgi",
+      "group": "ZeBest",
+      "link": {
+        "access": "BQDORfrq3fK5CxHYfxJaCDcPDh9JPYNdxCU2GM7A4YMIkvJKWQw0qlySMW4hEgzhcOt7chIjE6sh5OtOIf0sWfYy75QaI4yfoqP4dxHUrOlYddqwcvqpxbNZsChfIHH3c5GcVqYr_OAjxdw5fRAQ9r3QMeJy68_jJUE5YwD3162vStlsHjzyGJt5YSx0dVtpP11riRsuusM6VXbCAQIb2e8JAlVpEDtcVQXAJdyrShe35w1O0Z-s8FpNhApOMCu2mgtJlszd-E3C4mKdUZQ",
+        "refresh": "AQBx5G85pcKsYMqEpHbL47ZTZU8fVYB4NtpwTOFhNPsAX61wLMrOOz3By31vg3zRVif-TxhAEMsP92OcAOyJYU7kPdJpD34_fxANbaEhEMoeQCdMLsXHaG1sXpUtExfXQIU"
+      }
     }
   ],
   "groups": [
     {
-      "name": "MonGroupe",
-      "chief": "Nicolas",
+      "name": "ZeBest",
+      "chief": "test",
       "members": [
-        "Nicolas"
+        "test",
+        "Cyp"
       ]
     },
     {
@@ -36,13 +50,6 @@
       "chief": "Injin",
       "members": [
         "Injin"
-      ]
-    },
-    {
-      "name": "NewGroup",
-      "chief": "Cyp",
-      "members": [
-        "Cyp"
       ]
     }
   ]

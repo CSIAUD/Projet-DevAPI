@@ -75,15 +75,6 @@ const createPlaylist = async (req, res) => {
     
     // Remplissage de la playlist =============================================
 
-//     url --request POST \
-//   --url https://api.spotify.com/v1/playlists/playlist_id/tracks \
-//   --header 'Authorization: ' \
-//   --header 'Content-Type: application/json' \
-//   --data '{
-//   "uris": [
-//     "string"
-//   ],
-
     await axios({
         method: 'post',
         url: `https://api.spotify.com/v1/playlists/${idPlaylist}/tracks`,
