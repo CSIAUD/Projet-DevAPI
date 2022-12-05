@@ -509,3 +509,7 @@ isLinked = async (uid) => {
       console.log(err);
   } 
 }
+
+module.exports = { 
+  islinked
+} 
