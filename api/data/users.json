@@ -4,7 +4,11 @@
       "uid": "d29183fc-d82e-41b6-8b6a-4251a1dc432d",
       "username": "Nicolas",
       "password": "$2b$10$uxE3LlEhiG8dOI616Dq1xOuOSUa7xp1IKXgdE/61pwD3Bs3yDClvO",
-      "group": "MonGroupe"
+      "group": "MonGroupe",
+      "link": {
+        "access": "BQAzQzPvlVUOdT7uUjGt9KTQcNdCl0ACRa0_mb74SUos1qydWG64z9CcZ_-B9L7QOmn7ovwljOLfpfD2illIVzFNVSNqvcm1g33iwhefO0jh5R8dPE4MCRMwx4jf6snGSj8tHJnKOz8I7yAgKA2VHy5Z1pm87lGudvsLtSPJZJgmXxH5EeJwjT5dbKKbXOE6oQGy2CyauQgMt-SCEKKgYH-DkZ1Ve-IIEnqWOpV1PDK6giGwbTlE4BtBNDykpZ48ZFQjLVXQOTWwTdHMqbl-pIFrheciyC6884lxiGao2Zgn2sE",
+        "refresh": "AQC6vHGURu7WlFoobBlRsW3oAb9mKSCde8Hee0QlzyHn7gB2rEs5dpvEZ-JbfcaI-CIPSmhVDd9mFBafqGrUpxVN3fz1Y_Lc2bQMhPmtx9ZT-aukUSkK1epuLZt-wVR4PXA"
+      }
     },
     {
       "uid": "143a56c6-c4c9-4d77-9e15-d58cbfaf3007",
@@ -16,10 +20,6 @@
       "uid": "38f50a7a-c967-42a5-b7be-c10e85899b82",
       "username": "Cyp",
       "password": "$2b$10$EUQ6qvE3sRd8tTFBuK8MXutbz.hnu0AT7rPkuc6ifk8Nld4Q0eicq",
-      "link": {
-        "access": "BQCfj5-yjo80GZEMx8JUGfejkB7N4MpPBQb8cgs340xMeZ83KrFLOQTWSLvypHkob5QV-ToXQAuS1qaAl3tW_8ya17mzcpRVO8y7VEr1YdWzus5whoLd7lUrZ1UUFGUqhdR_8wTrMnGmFFBUhGWdqKXmlt-fptStKTf-4084GAlgk7YAR4ZhT5C8eU6QAQXBW0xNrhxmMwhe04zzUB0le-Vm6dZ7Rn4",
-        "refresh": "AQAPjd3_c80a8qingswyCIgNsJ9v7YGoLFVId6p2HYCinPQuykCAvFmjnVw5gg4xyklZKE7wXEzNFuZsgnJWZeB9hAruStl3Yievs09h_0iK-M1ycgGKXfhj4YWDGleLFIs"
-      },
       "group": "NewGroup"
     }
   ],

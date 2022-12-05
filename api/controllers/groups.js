@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const spotify = require('./spotify');
 
 // DISPLAY ALL GROUPS' NAME AND SIZE
-module.exports.listGroup = async (req, res) => {
+const listGroup = async (req, res) => {
     /* 
         #swagger.summary = 'Afficher les groupes (FT-5)'
         #swagger.description = "Affiche la liste des groupes existants et leur taille."
@@ -28,9 +28,8 @@ module.exports.listGroup = async (req, res) => {
     return res.status(200).json(listGroups);
 }
 
-
 // Join a group
-module.exports.joinGroup = async (req, res) => {
+const joinGroup = async (req, res) => {
     /* 
         #swagger.summary = 'Rejoindre un groupe (FT-4)'
         #swagger.description = "Rejoindre un groupe."
@@ -88,7 +87,7 @@ module.exports.joinGroup = async (req, res) => {
     return res.status(200).json("L'utilisateur a rejoint le groupe '" + groupName + "'.");
 }
 
-module.exports.listMembersOfGroup = async (req, res) => {    
+const listMembersOfGroup = async (req, res) => {    
     /* 
         #swagger.summary = 'Afficher les détails de son groupe (FT-5 bis)'
         #swagger.description = "Affiche le détail de membres du groupe auquel l'utilisateur appartient."
@@ -142,15 +141,15 @@ module.exports.listMembersOfGroup = async (req, res) => {
 
                     // GET SPOTIFY DEVICE NAME
                     const spotifyDevice = await spotify.getUserDeviceName(link.access);
-                    if(spotifyDevice.name && spotifyDevice.type)
-                        result.device = `${spotifyDevice.name} (${spotifyDevice.type})`;
+                    if(spotifyDevice?.name && spotifyDevice?.type)
+                        result.device = `${spotifyDevice?.name} (${spotifyDevice?.type})`;
 
                     // GET CURRENT MUSIC PLAYING
                     const userPlayingSong = await spotify.getUserPlayingSongInfo(link.access);
                     if (userPlayingSong != undefined && userPlayingSong != '') {
-                        result.currentTitle = userPlayingSong.item.name;
-                        result.artist = userPlayingSong.item.artists[0].name;
-                        result.currentAlbumTitle = userPlayingSong.item.album.name;
+                        result.currentTitle = userPlayingSong?.item?.name;
+                        result.artist = userPlayingSong?.item?.artists[0]?.name;
+                        result.currentAlbumTitle = userPlayingSong?.item?.album?.name;
                     } else if (userPlayingSong === '') {
                         result.currentTitle = "Aucune musique en cours d'écoute.";
                     }
@@ -166,7 +165,7 @@ module.exports.listMembersOfGroup = async (req, res) => {
         }
         
         return res.status(200).json(finalResult);
-    }
+}
 
 // Create group
 function createGroup(newGroup) {
@@ -206,7 +205,6 @@ function isExistGroup(nameGroup) {
 
 // Get the username with user uid
 function getUserByUid(uid) {
-    //const file = require('../users.json');
     const file = require('../data/users.json');
 
     const users = file.users;
@@ -234,9 +232,7 @@ function getUserByUserName(username) {
 
 // Check if user id chief of group
 function isUserChiefGroup(groupName, userName) {
-
     const file = require('../data/users.json');
-    //const file = require(USER_JSON);
 
     const groups = file.groups;
     const group = groups.find(g => g.name === groupName);
@@ -436,4 +432,13 @@ function addMemberToGroup(groupName, userName) {
     } catch (err) {
         console.error(err)
     }
+}
+
+module.exports = { 
+    listGroup, 
+    joinGroup, 
+    listMembersOfGroup, 
+    getUserByUid,
+    isUserChiefGroup,
+    getUserByUserName
 }

@@ -1,17 +1,16 @@
 const router = require("express").Router();
-const spotifyController = require("../controllers/spotify.js");
 const middleWare = require('../controllers/middleware.js')
+const spotifyController = require("../controllers/spotify.js");
+const playlistsController = require("../controllers/playlists.js");
+const synchronizeController = require("../controllers/synchronize.js");
 
-router.get("/refresh_token", spotifyController.refreshToken);
 router.get("/callback", spotifyController.callback);
 router.get("/link", middleWare.verify ,spotifyController.link);
+router.get("/me", middleWare.verify ,spotifyController.profile);
+router.put("/synchronize", middleWare.verify, synchronizeController.synchronize);
+router.post("/playlist", middleWare.verify, playlistsController.createPlaylist);
 
 module.exports = router
-
-// ENDPOINT : /api/spotify/refresh_token
-// USAGE : Mise à jour du Acess_Token de Spotify
-// METHOD : [get]
-// Parameters : query.refresh_token => Le refresh Token de Spotify
 
 // ENDPOINT : /api/spotify/callback
 // USAGE : Route de retour pour la connexion à Spotify

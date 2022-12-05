@@ -198,25 +198,6 @@
         ]
       }
     },
-    "/api/spotify/refresh_token": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "refresh_token",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/spotify/callback": {
       "get": {
         "description": "",
@@ -275,6 +256,128 @@
             "bearerAuth": []
           }
         ]
+      }
+    },
+    "/api/spotify/me": {
+      "get": {
+        "summary": "Afficher la personnalité de l'utilisateur Spotify (FT-6)",
+        "description": "Affiche la personnalité de l'utilisateur en fonction de ses titres likés sur Spotify.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Portrait généré avec succès."
+          },
+          "401": {
+            "description": "Vous n'êtes pas authentifié(e)."
+          },
+          "403": {
+            "description": "Le token est invalide."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/spotify/synchronize": {
+      "put": {
+        "summary": "Synchronisation (FT-7)",
+        "description": "Synchronise la lecture d'un chef de groupe avec celles des autres utilisateurs.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Synchronisation effectuée avec succès."
+          },
+          "204": {
+            "description": "L'appareil d'écoute n'est pas actif."
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Vous n'êtes pas authentifié(e)."
+          },
+          "403": {
+            "description": "Le token est invalide."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/spotify/playlist": {
+      "post": {
+        "summary": "Création de playlists (FT-8)",
+        "description": "Crée une playlist contenant les 10 Top Tracks de l'utilisateur YSpotify passé en paramètre.     Saisissez un nom pour votre playlist et le nom d'un utilisateur local (YSpotify) ayant lié son compte Spotify au service YSpotify.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Vous n'êtes pas authentifié(e)."
+          },
+          "403": {
+            "description": "Le token est invalide."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "playlist_name": {
+                    "example": "any"
+                  },
+                  "username": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
