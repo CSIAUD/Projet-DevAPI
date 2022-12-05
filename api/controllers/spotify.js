@@ -63,12 +63,23 @@ module.exports.link = async (req, res) => {
 
     getTokenFunction(uid)
     
-    let linked = await isLinked(uid);
+    let linked = await isLinkedFunction(uid);
     if (linked) {
         return res.status(400).json("Ce compte a déjà été lié à Spotify.");
     } else { 
-      // your application requests authorization
-      const scope = 'user-read-private user-read-email user-read-playback-state user-library-read user-top-read';
+      const scopeArray = [
+        'user-read-private',
+        'user-read-email', 
+        'user-read-playback-state', 
+        'user-library-read',
+        'user-top-read', 
+        'playlist-read-private', 
+        'playlist-read-collaborative', 
+        'playlist-modify-private', 
+        'playlist-modify-public'
+      ];
+
+      const scope = scopeArray.join(' ');
 
       const url = 'https://accounts.spotify.com/authorize?' +
         querystring.stringify(
@@ -89,6 +100,9 @@ module.exports.link = async (req, res) => {
 // Récupération d'un access_token valide de Spotify
 module.exports.getToken = async (uid) => {
   return await getTokenFunction(uid);
+}
+module.exports.isLinked = async (uid) => {
+  return await isLinkedFunction(uid);
 }
 
 // Traitement de la connexion avec Spotify
@@ -344,7 +358,7 @@ module.exports.getUserDeviceName = async (userSpotifyToken) => {
 getTokenFunction = async(uid) => {
   console.log("== GET TOKEN ========")
   try {
-    let linked = await isLinked(uid);
+    let linked = await isLinkedFunction(uid);
     if(linked){
       let user = await usersController.findOneById(uid);
       let access = user.link.access;
@@ -467,7 +481,7 @@ setAcessToken = async (uid, token) => {
 }
 
 // Vérification du lien avec Spotify basé sur users.json
-isLinked = async (uid) => {
+isLinkedFunction = async (uid) => {
   try {
     const fileContent = readFileSync(file);
     const users = JSON.parse(fileContent.toString()).users;
@@ -512,6 +526,3 @@ isLinked = async (uid) => {
   } 
 }
 
-module.exports = { 
-  islinked
-} 

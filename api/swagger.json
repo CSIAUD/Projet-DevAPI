@@ -201,8 +201,65 @@
     "/api/playlist/me/top/tracks": {
       "get": {
         "description": "",
-        "parameters": [],
-        "responses": {}
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Vous n'êtes pas authentifié(e)."
+          },
+          "403": {
+            "description": "Le token est invalide."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/playlist/other/top/tracks": {
+      "get": {
+        "summary": "Création de playlists (FT-8)",
+        "description": "Crée une playlist.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Vous n'êtes pas authentifié(e)."
+          },
+          "403": {
+            "description": "Le token est invalide."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/api/spotify/refresh_token": {
