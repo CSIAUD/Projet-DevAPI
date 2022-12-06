@@ -14,12 +14,12 @@
 2. Avoir créé un client Spotify sur votre espace développeur (Dashboard) (https://developer.spotify.com/dashboard/applications)
 <br><br>
 
-## <strong>Lexique</strong>
-<strong>Service</strong> : Application exposant les fonctionnalités.<br>
-<strong>Utilisateur</strong> : Utilisateur <strong>inscrit</strong> et <strong>authentifié</strong> sur le Service.<br>
-<strong>Utilisateur anonyme</strong> : Utilisateur <strong>non-authentifié</strong> sur le Service.<br>
-<strong>Groupe</strong> : Ensemble d’Utilisateurs.<br>
-<strong>Chef</strong> : Utilisateur ayant des droits privilégiés sur son Groupe.<br><br>
+## <strong>Mise en route</strong>
+<strong>1.</strong> Se placer dans le dossier /api et lancer la commande <strong>npm start</strong> pour lancer le service.
+<strong>2.</strong> Ouvrir un navigateur à l'adresse <strong>localhost:8080/api-docs</strong> pour accéder au SwaggerUI.
+<strong>3.</strong> Se créer un compte en testant l'endpoint <strong>POST /api/users</strong>. Cliquer sur le bouton <strong>Try It Out</strong> pour rentrer un username et un mot de passe.
+<strong>4.</strong> Une fois le compte créé, cliquer sur le bouton vert "Authorize" et rentrer ses identifiants (Basic Auth).
+<strong>5.</strong> Se connecter en testant l'endpoint <strong>GET /api/token</strong>. Copier le JWT Token retourné. Cliquer sur le bouton "Authorize" et copier le token dans le champ Bearer Token. Vous êtes authentifié et pouvez tester les autres endpoints de l'API : rejoindre un groupe, afficher la liste des groupes, lier son compte Spotify, créer une playlist.
 
 ## <strong>Documentation</strong>
 <strong>L’ensemble</strong> de l'API est documenté grâce à la spécification OpenAPI (dernière release). Un 
@@ -29,6 +29,13 @@ SwaggerUI est accessible à http://localhost:8080/api-docs.<br>
 <br><br>
 
 Toutes les fonctionnalités de l’API peuvent être testées directement via le SwaggerUI généré.<br>
+
+## <strong>Lexique</strong>
+<strong>Service</strong> : Application exposant les fonctionnalités.<br>
+<strong>Utilisateur</strong> : Utilisateur <strong>inscrit</strong> et <strong>authentifié</strong> sur le Service.<br>
+<strong>Utilisateur anonyme</strong> : Utilisateur <strong>non-authentifié</strong> sur le Service.<br>
+<strong>Groupe</strong> : Ensemble d’Utilisateurs.<br>
+<strong>Chef</strong> : Utilisateur ayant des droits privilégiés sur son Groupe.<br><br>
 
 ## <strong>Fonctionnalités obligatoires</strong>
 Cette section décrit l’ensemble des fonctionnalités <strong>obligatoires</strong> que le Service doit exposer.<br><br>
