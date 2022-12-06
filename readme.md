@@ -21,6 +21,12 @@
 <strong>Groupe</strong> : Ensemble d’Utilisateurs.<br>
 <strong>Chef</strong> : Utilisateur ayant des droits privilégiés sur son Groupe.<br><br>
 
+## <strong>Documentation</strong>
+<strong>L’ensemble</strong> de l'API est documenté grâce à la spécification OpenAPI (dernière release). Un 
+SwaggerUI est accessible à http://localhost:8080/api-docs.<br>
+
+Toutes les fonctionnalités de l’API peuvent être testées directement via le SwaggerUI généré.<br>
+
 ## <strong>Fonctionnalités obligatoires</strong>
 Cette section décrit l’ensemble des fonctionnalités <strong>obligatoires</strong> que le Service doit exposer.<br><br>
 
@@ -145,12 +151,6 @@ et effectuer une action manuelle afin d’autoriser notre service/client à acc�
 Les FT-1 et FT-2 sont les seules fonctionnalités accessibles par un Utilisateur anonyme.
 Les FT-6, FT-7, FT-8 nécessitent que l’Utilisateur ait lié son compte Spotify, sans quoi l’accès lui est 
 refusé.<br><br>
-
-## <strong>Documentation</strong>
-<strong>L’ensemble</strong> de votre API doit être documenté grâce à la spécification OpenAPI (dernière release). Un 
-SwaggerUI doit être accessible à http://localhost:<:port>/api-docs.<br>
-
-Toutes les fonctionnalités de l’API doivent pouvoir être testées directement via le SwaggerUI généré.<br>
 
 Un fichier <strong>README</strong> doit être présent à la racine de votre projet, décrivant toutes les procédures 
 importantes pour faire fonctionner votre API (installation, lancement, …) ainsi que la <strong>composition de votre équipe</strong>.<br><br>
