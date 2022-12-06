@@ -134,25 +134,24 @@ const listMembersOfGroup = async (req, res) => {
 
             let link = userInformation.link
 
+            // GET SPOTIFY USERNAME
+            const spotifyUsername = await spotify.getSpotifyUsername(access_token);
+            result.spotifyPseudo = spotifyUsername;
 
-                // GET SPOTIFY USERNAME
-                const spotifyUsername = await spotify.getSpotifyUsername(access_token);
-                result.spotifyPseudo = spotifyUsername;
+            // GET SPOTIFY DEVICE NAME
+            const spotifyDevice = await spotify.getUserDeviceName(access_token);
+            if(spotifyDevice?.name && spotifyDevice?.type)
+                result.device = `${spotifyDevice?.name} (${spotifyDevice?.type})`;
 
-                // GET SPOTIFY DEVICE NAME
-                const spotifyDevice = await spotify.getUserDeviceName(access_token);
-                if(spotifyDevice?.name && spotifyDevice?.type)
-                    result.device = `${spotifyDevice?.name} (${spotifyDevice?.type})`;
-
-                // GET CURRENT MUSIC PLAYING
-                const userPlayingSong = await spotify.getUserPlayingSongInfo(access_token);
-                if (userPlayingSong != undefined && userPlayingSong != '') {
-                    result.currentTitle = userPlayingSong?.item?.name;
-                    result.artist = userPlayingSong?.item?.artists[0]?.name;
-                    result.currentAlbumTitle = userPlayingSong?.item?.album?.name;
-                } else if (userPlayingSong === '') {
-                    result.currentTitle = "Aucune musique en cours d'écoute.";
-                }
+            // GET CURRENT MUSIC PLAYING
+            const userPlayingSong = await spotify.getUserPlayingSongInfo(access_token);
+            if (userPlayingSong != undefined && userPlayingSong != '') {
+                result.currentTitle = userPlayingSong?.item?.name;
+                result.artist = userPlayingSong?.item?.artists[0]?.name;
+                result.currentAlbumTitle = userPlayingSong?.item?.album?.name;
+            } else if (userPlayingSong === '') {
+                result.currentTitle = "Aucune musique en cours d'écoute.";
+            }
 
             listAllMembers.push(result);
         };
@@ -162,8 +161,8 @@ const listMembersOfGroup = async (req, res) => {
             members: listAllMembers,
         }
         
-        return finalResult;
-}
+        return res.status(200).json(finalResult);
+    }
 
 // Create group
 function createGroup(newGroup) {

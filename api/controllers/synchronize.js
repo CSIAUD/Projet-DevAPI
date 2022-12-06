@@ -31,10 +31,6 @@ const synchronize = async (req, res) => {
     
     let actual_deviceInformations = await spotify.getUserDeviceName(actual_access_token);
     actual_deviceInformations = actual_deviceInformations[0];
-    
-    //console.log("device :")
-    // console.log(actual_deviceInformations);
-
 
     // Check if chief device is active
     if(!actual_deviceInformations.is_active)
@@ -42,11 +38,6 @@ const synchronize = async (req, res) => {
 
     // Get list of members
     let listMembers = (await groupsController.listMembersOfGroup(req, res)).members;
-    // console.log("=============================")
-    // console.log(listMembers)
-    // console.log("+++++++++++++++++++++++++++++")
-    //console.log("liste :")
-    //console.log(listMembers);
 
     // Récupération de la musique en cours d'écoute + temps
     let current_track = await axios.get('https://api.spotify.com/v1/me/player', {
@@ -74,13 +65,12 @@ const synchronize = async (req, res) => {
         if(member.isChief)
             continue;
         
-        let localUser = await users.findOne(member.memberName);
+        let localUser = users.findOne(member.memberName);
         let access_token = await spotify.getToken(localUser.uid);
         let device = (await spotify.getUserDeviceName(access_token))[0];
-        // console.log(device)
 
         const data = { 
-            "uris": [`spotify:track:${current_track.id}`],
+            "uris": [`spotify:track:${current_track?.id}`],
             "position_ms": current_track.progress
         };
         const headers = { 
@@ -89,7 +79,7 @@ const synchronize = async (req, res) => {
             'accept-encoding': 'null'
         };
 
-        await axios.put(`https://api.spotify.com/v1/me/player/play?device_id=${device.id}`, data, { headers })
+        await axios.put(`https://api.spotify.com/v1/me/player/play?device_id=${device?.id}`, data, { headers })
         .then(function (response) {
             console.log(response.data)
         })
@@ -99,31 +89,8 @@ const synchronize = async (req, res) => {
             console.log('error set track')
         })
     }
-
-    // for (let index = 0; index < listMembers.length; index++) {
-    //     let member = listMembers[index];
-
-    //     memberInformation = groupsController.getUserByUserName(member.memberName);
-
-    //     let responseDevices = await axios.put('https://api.spotify.com/v1/me/player', {
-    //         headers : {
-    //         Authorization : "Bearer " + access_token
-    //         },
-    //         devices_ids : [ member.device.split(' ')[0] ]
-    //     })
-    //     .then(function (response) {      
-    //         return response;
-    //     })
-    //     .catch(async function (error) {
-    //         return "ERROR : Transfer playback";
-    //     })
-    //     console.log("+++++++++++++++++++++++++++++++++++++++++++")
-    //     console.log(responseDevices)
-    //     console.log("-------------------------------------------")
-    // }
     
-    return res.send(); // ???
-    // return res.send(user); // ???
+    return res.status(200).json("Synchronisation effectuée.");
 }
 
 module.exports = { synchronize }
