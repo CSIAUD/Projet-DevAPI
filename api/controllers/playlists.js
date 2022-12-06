@@ -4,6 +4,7 @@ const users = require('../controllers/auth.js'); // Import du controller
 const axios = require('axios');
 
 
+
 const createPlaylist = async (req, res) => {
     /*  
         #swagger.summary = "Création de playlists (FT-8)"
@@ -21,17 +22,17 @@ const createPlaylist = async (req, res) => {
     */  
     let isLinked = await spotify.isLinked(actual_uid);
     let otherLinked = await spotify.isLinked(user.uid);
-    
+
     if(!user) 
         return res.status(400).json("L'utillisateur choisi n'existe pas.");
     if(!otherLinked) 
         return res.status(400).json("L'utilisateur choisi n'a pas lié de compte Spotify.");
     if(!isLinked) 
         return res.status(403).json("Vous n'avez pas lié de compte Spotify.");
-    
+
     let actual_access_token = await spotify.getToken(actual_uid); //! important
     let wanted_access_token = await spotify.getToken(user.uid); //! important
-    
+
     // 1. PLAYLIST CREATION
     let topTracks = await getTopTracks(wanted_access_token, 10);
     let idLists = [];
@@ -48,7 +49,7 @@ const createPlaylist = async (req, res) => {
         let id = idLists[key];
         idLists[key] = `spotify:track:${id}`;
     }
-
+    
     // Création de la playlist ===================================================
     let createdPlaylist = await axios({
         method: 'post',
@@ -72,8 +73,17 @@ const createPlaylist = async (req, res) => {
     })
 
     let idPlaylist = createdPlaylist.id;
-    
+
     // Remplissage de la playlist =============================================
+
+//     url --request POST \
+//   --url https://api.spotify.com/v1/playlists/playlist_id/tracks \
+//   --header 'Authorization: ' \
+//   --header 'Content-Type: application/json' \
+//   --data '{
+//   "uris": [
+//     "string"
+//   ],
 
     await axios({
         method: 'post',
@@ -105,7 +115,7 @@ const getTopTracks = async (access_token, limit) => {
             'accept-encoding': 'null'
         }
     };
- 
+
     return await axios.get(`https://api.spotify.com/v1/me/top/tracks?limit=${limit}`, options)
       .then(function (response) {
         console.log("OK - Get TopTracks");
@@ -118,4 +128,4 @@ const getTopTracks = async (access_token, limit) => {
 }
 
 
-module.exports = { createPlaylist }
+module.exports = { createPlaylist } 
