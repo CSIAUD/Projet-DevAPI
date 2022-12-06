@@ -25,6 +25,9 @@
 <strong>L’ensemble</strong> de l'API est documenté grâce à la spécification OpenAPI (dernière release). Un 
 SwaggerUI est accessible à http://localhost:8080/api-docs.<br>
 
+![Capture](https://user-images.githubusercontent.com/87578863/205856703-e5b22af6-a770-47d5-a0dd-a047f4f4652a.PNG)
+<br><br>
+
 Toutes les fonctionnalités de l’API peuvent être testées directement via le SwaggerUI généré.<br>
 
 ## <strong>Fonctionnalités obligatoires</strong>
