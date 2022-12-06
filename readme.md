@@ -14,6 +14,22 @@
 2. Avoir créé un client Spotify sur votre espace développeur (Dashboard) (https://developer.spotify.com/dashboard/applications)
 <br><br>
 
+## <strong>Mise en route</strong>
+<strong>1.</strong> Se placer dans le dossier /api et lancer la commande <strong>npm start</strong> pour lancer le service.<br><br>
+<strong>2.</strong> Ouvrir un navigateur à l'adresse <strong>localhost:8080/api-docs</strong> pour accéder au SwaggerUI.<br><br>
+<strong>3.</strong> Se créer un compte en testant l'endpoint <strong>POST /api/users</strong>. Cliquer sur le bouton <strong>Try It Out</strong> pour rentrer un username et un mot de passe.<br><br>
+<strong>4.</strong> Une fois le compte créé, cliquer sur le bouton vert "Authorize" et rentrer ses identifiants (Basic Auth).<br><br>
+<strong>5.</strong> Se connecter en testant l'endpoint <strong>GET /api/token</strong>. Copier le JWT Token retourné. Cliquer sur le bouton "Authorize" et copier le token dans le champ Bearer Token. Vous êtes authentifié et pouvez tester les autres endpoints de l'API : rejoindre un groupe, afficher la liste des groupes, lier son compte Spotify, créer une playlist.<br>
+
+## <strong>Documentation</strong>
+<strong>L’ensemble</strong> de l'API est documenté grâce à la spécification OpenAPI (dernière release). Un 
+SwaggerUI est accessible à http://localhost:8080/api-docs.<br>
+
+![Capture](https://user-images.githubusercontent.com/87578863/205856703-e5b22af6-a770-47d5-a0dd-a047f4f4652a.PNG)
+<br><br>
+
+Toutes les fonctionnalités de l’API peuvent être testées directement via le SwaggerUI généré.<br>
+
 ## <strong>Lexique</strong>
 <strong>Service</strong> : Application exposant les fonctionnalités.<br>
 <strong>Utilisateur</strong> : Utilisateur <strong>inscrit</strong> et <strong>authentifié</strong> sur le Service.<br>
@@ -145,12 +161,6 @@ et effectuer une action manuelle afin d’autoriser notre service/client à acc�
 Les FT-1 et FT-2 sont les seules fonctionnalités accessibles par un Utilisateur anonyme.
 Les FT-6, FT-7, FT-8 nécessitent que l’Utilisateur ait lié son compte Spotify, sans quoi l’accès lui est 
 refusé.<br><br>
-
-## <strong>Documentation</strong>
-<strong>L’ensemble</strong> de votre API doit être documenté grâce à la spécification OpenAPI (dernière release). Un 
-SwaggerUI doit être accessible à http://localhost:<:port>/api-docs.<br>
-
-Toutes les fonctionnalités de l’API doivent pouvoir être testées directement via le SwaggerUI généré.<br>
 
 Un fichier <strong>README</strong> doit être présent à la racine de votre projet, décrivant toutes les procédures 
 importantes pour faire fonctionner votre API (installation, lancement, …) ainsi que la <strong>composition de votre équipe</strong>.<br><br>
